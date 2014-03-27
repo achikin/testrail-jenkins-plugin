@@ -1,6 +1,18 @@
-*.class
+target
+work
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# IntelliJ project files 
+*.iml
+*.iws
+*.ipr
+.idea
+out
+
+# eclipse project file
+.settings
+.classpath
+.project
+build
+
+# vim
+*~
