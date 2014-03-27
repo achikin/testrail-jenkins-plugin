@@ -214,19 +214,17 @@ public class TestRailNotifier extends Notifier {
                 throws IOException, ServletException {
             if (value.length() == 0) {
                 return FormValidation.error("Please set a project name.");
-            } else {
-                TestRailClient testrail = new TestRailClient(getTestrailHost(),
-                                                             getTestrailUser(),
-                                                             getTestrailPassword());
-                if (!testrail.serverReachable() || !testrail.authenticationWorks()) {
-                    return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
-                } else {
-                    try {
-                        int projectId = testrail.getProjectId(value);
-                    } catch (ElementNotFoundException e) {
-                        return FormValidation.error("Project " + value + " not found on TestRail server.");
-                    }
-                }
+            }
+            TestRailClient testrail = new TestRailClient(getTestrailHost(),
+                    getTestrailUser(),
+                    getTestrailPassword());
+            if (!testrail.serverReachable() || !testrail.authenticationWorks()) {
+                return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
+            }
+            try {
+                int projectId = testrail.getProjectId(value);
+            } catch (ElementNotFoundException e) {
+                return FormValidation.error("Project " + value + " not found on TestRail server.");
             }
             return FormValidation.ok();
         }
@@ -236,24 +234,23 @@ public class TestRailNotifier extends Notifier {
                 throws IOException, ServletException {
             if (value.length() == 0) {
                 return FormValidation.error("Please set a suite name.");
+            }
+            TestRailClient testrail = new TestRailClient(getTestrailHost(),
+                    getTestrailUser(),
+                    getTestrailPassword());
+            if (!testrail.serverReachable() || !testrail.authenticationWorks()) {
+                return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
             } else {
-                TestRailClient testrail = new TestRailClient(getTestrailHost(),
-                                                             getTestrailUser(),
-                                                             getTestrailPassword());
-                if (!testrail.serverReachable() || !testrail.authenticationWorks()) {
-                    return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
-                } else {
-                    int projectId;
-                    try {
-                        projectId = testrail.getProjectId(testrailProject);
-                    } catch (ElementNotFoundException e) {
-                        return FormValidation.error("Project " + testrailProject + " not found on TestRail server.");
-                    }
-                    try {
-                        int suiteId = testrail.getSuiteId(projectId, value);
-                    } catch (ElementNotFoundException e) {
-                        return FormValidation.error("Suite " + value + " not found on TestRail server.");
-                    }
+                int projectId;
+                try {
+                    projectId = testrail.getProjectId(testrailProject);
+                } catch (ElementNotFoundException e) {
+                    return FormValidation.error("Project " + testrailProject + " not found on TestRail server.");
+                }
+                try {
+                    int suiteId = testrail.getSuiteId(projectId, value);
+                } catch (ElementNotFoundException e) {
+                    return FormValidation.error("Suite " + value + " not found on TestRail server.");
                 }
             }
             return FormValidation.ok();
@@ -272,11 +269,13 @@ public class TestRailNotifier extends Notifier {
             if (value.length() == 0) {
                 return FormValidation.warning("Please add your TestRail host URI.");
             }
-            else {
-                TestRailClient testrail = new TestRailClient(value, "", "");
-                if (!testrail.serverReachable()) {
-                    return FormValidation.error("Host is not reachable.");
-                }
+            // TODO: There is probably a better way to do URL validation.
+            if (!value.startsWith("http://") && !value.startsWith("https://")) {
+                return FormValidation.error("Host must be a valid URL.");
+            }
+            TestRailClient testrail = new TestRailClient(value, "", "");
+            if (!testrail.serverReachable()) {
+                return FormValidation.error("Host is not reachable.");
             }
             return FormValidation.ok();
         }
@@ -287,12 +286,11 @@ public class TestRailNotifier extends Notifier {
                 throws IOException, ServletException {
             if (value.length() == 0) {
                 return FormValidation.warning("Please add your user's email address.");
-            } else {
-                if (testrailPassword.length() > 0) {
-                    TestRailClient testrail = new TestRailClient(testrailHost, value, testrailPassword);
-                    if (testrail.serverReachable() && !testrail.authenticationWorks()){
-                        return FormValidation.error("Invalid user/password combination.");
-                    }
+            }
+            if (testrailPassword.length() > 0) {
+                TestRailClient testrail = new TestRailClient(testrailHost, value, testrailPassword);
+                if (testrail.serverReachable() && !testrail.authenticationWorks()){
+                    return FormValidation.error("Invalid user/password combination.");
                 }
             }
             return FormValidation.ok();
@@ -304,12 +302,11 @@ public class TestRailNotifier extends Notifier {
                 throws IOException, ServletException {
             if (value.length() == 0) {
                 return FormValidation.warning("Please add your password.");
-            } else {
-                if (testrailUser.length() > 0) {
-                    TestRailClient testrail = new TestRailClient(testrailHost, testrailUser, value);
-                    if (testrail.serverReachable() && !testrail.authenticationWorks()){
-                        return FormValidation.error("Invalid user/password combination.");
-                    }
+            }
+            if (testrailUser.length() > 0) {
+                TestRailClient testrail = new TestRailClient(testrailHost, testrailUser, value);
+                if (testrail.serverReachable() && !testrail.authenticationWorks()){
+                    return FormValidation.error("Invalid user/password combination.");
                 }
             }
             return FormValidation.ok();
