@@ -90,7 +90,8 @@ public class TestRailNotifier extends Notifier {
 
         listener.getLogger().println("Munging test result files.");
         Results results = new Results();
-        String base = String.valueOf(build.getWorkspace());
+        String base = String.valueOf(build.getProject().getRootDir() + "/workspace"); //build.getWorkspace());
+        listener.getLogger().println("base dir: " + base);
         String [] includesDirs = { this.junitResults };
         JUnitResults junitResults = null;
         try {
