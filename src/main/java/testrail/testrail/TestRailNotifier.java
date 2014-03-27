@@ -321,7 +321,7 @@ public class TestRailNotifier extends Notifier {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "TestRail";
+            return "Publish test results to TestRail";
         }
 
         @Override
