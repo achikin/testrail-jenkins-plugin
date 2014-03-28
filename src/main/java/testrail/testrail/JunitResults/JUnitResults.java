@@ -1,6 +1,7 @@
 package testrail.testrail.JunitResults;
 
 import hudson.FilePath;
+import hudson.remoting.VirtualChannel;
 import hudson.util.DirScanner;
 import hudson.util.FileVisitor;
 
@@ -33,9 +34,14 @@ public class JUnitResults {
         JAXBContext jaxbContext = JAXBContext.newInstance(Testsuite.class);
         final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-        DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
+        final DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
         logger.println("Scanning " + baseDir);
-        scanner.scan(new File(baseDir.toURI()), new FileVisitor() {
+
+        baseDir.act(new FilePath.FileCallable<Void>() {
+            public Void invoke(File f, VirtualChannel channel) throws IOException {
+                Testsuite suite = null;
+                logger.println("processing " + f.getName());
+                scanner.scan(f, new FileVisitor() {
                     @Override
                     public void visit(File file, String s) throws IOException {
                         Testsuite suite = null;
@@ -48,7 +54,24 @@ public class JUnitResults {
                         Suites.add(suite);
                     }
                 });
-    }
+                return null;
+            }});
+        }
+
+    /*    scanner.scan(new File(baseDir.toURI()), new FileVisitor() {
+                    @Override
+                    public void visit(File file, String s) throws IOException {
+                        Testsuite suite = null;
+                        logger.println("processing " + file.getName());
+                        try {
+                            suite = (Testsuite) jaxbUnmarshaller.unmarshal(file);
+                        } catch (JAXBException e) {
+                            e.printStackTrace();
+                        }
+                        Suites.add(suite);
+                    }
+                });*/
+    //}
 
     public List<Testsuite> getSuites() {
         return this.Suites;
