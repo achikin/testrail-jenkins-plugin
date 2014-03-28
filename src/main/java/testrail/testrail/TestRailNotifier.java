@@ -1,6 +1,7 @@
 package testrail.testrail;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -66,7 +67,7 @@ public class TestRailNotifier extends Notifier {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
-            throws IOException {
+            throws IOException, InterruptedException {
         TestRailClient testrail = new TestRailClient(
                 getDescriptor().getTestrailHost(),
                 getDescriptor().getTestrailUser(),
@@ -90,16 +91,15 @@ public class TestRailNotifier extends Notifier {
 
         listener.getLogger().println("Munging test result files.");
         Results results = new Results();
-        String base = String.valueOf(build.getProject().getRootDir() + "/workspace"); //build.getWorkspace());
+        FilePath base = build.getWorkspace();
         listener.getLogger().println("base dir: " + base);
-        String [] includesDirs = { this.junitResults };
-        JUnitResults junitResults = null;
+        JUnitResults actualJunitResults = null;
         try {
-            junitResults = new JUnitResults(base, includesDirs);
+            actualJunitResults = new JUnitResults(base, this.junitResults, listener.getLogger());
         } catch (JAXBException e) {
             listener.getLogger().println(e.getMessage());
         }
-        List<Testsuite> suites = junitResults.getSuites();
+        List<Testsuite> suites = actualJunitResults.getSuites();
         Iterator<Testsuite> testsuiteIterator = suites.iterator();
         while (testsuiteIterator.hasNext()) {
             Testsuite suite = testsuiteIterator.next();
