@@ -15,7 +15,7 @@
   <f:entry title="Suite" field="testrailSuite">
     <f:textbox />
   </f:entry>
-  <f:entry title="Test Report XMLs" field="junitResults">
+  <f:entry title="Test Report XMLs" field="junitResultsGlob">
     <f:textbox />
   </f:entry>
 </j:jelly>

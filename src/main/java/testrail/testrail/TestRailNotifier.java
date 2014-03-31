@@ -3,6 +3,7 @@ package testrail.testrail;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
@@ -48,14 +49,14 @@ public class TestRailNotifier extends Notifier {
 
     private final String testrailProject;
     private final String testrailSuite;
-    private final String junitResults;
+    private final String junitResultsGlob;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public TestRailNotifier(String testrailProject, String testrailSuite, String junitResults) {
+    public TestRailNotifier(String testrailProject, String testrailSuite, String junitResultsGlob) {
         this.testrailProject = testrailProject;
         this.testrailSuite = testrailSuite;
-        this.junitResults = junitResults;
+        this.junitResultsGlob = junitResultsGlob;
     }
 
     /**
@@ -63,7 +64,7 @@ public class TestRailNotifier extends Notifier {
      */
     public String getTestrailProject() { return this.testrailProject; }
     public String getTestrailSuite() { return this.testrailSuite; }
-    public String getJunitResults() { return this.junitResults; }
+    public String getJunitResultsGlob() { return this.junitResultsGlob; }
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
@@ -91,11 +92,26 @@ public class TestRailNotifier extends Notifier {
 
         listener.getLogger().println("Munging test result files.");
         Results results = new Results();
-        FilePath base = build.getWorkspace();
-        listener.getLogger().println("base dir: " + base);
+
+        // FilePath doesn't have a read method. We want to actually process the files on the master
+        // because during processing we talk to TestRail and slaves might not be able to.
+        // So we'll copy the result files to the master and munge them there:
+        //
+        // Create a temp directory.
+        // Do a base.copyRecursiveTo() with file masks into the temp dir.
+        // process the temp files.
+        // it looks like the destructor deletes the temp dir when we're finished
+        FilePath tempdir = new FilePath(Util.createTempDir());
+        // This is an ugly way to not process old results.
+        // I know that for a new result foo.xml there might be old results for that test
+        // named foo.0.xml, foo.1.xml, et al. This excludes those. I hope that it won't
+        // also exclude new vaid test results.
+        String excludes = "**/*.*0.xml, **/*.*1.xml, **/*.*2.xml, **/*.*3.xml, **/*.*4.xml, **/*.*5.xml, **/*.*6.xml, **/*.*7.xml, **/*.*8.xml, **/*.*9.xml";
+        build.getWorkspace().copyRecursiveTo(junitResultsGlob, excludes, tempdir);
+
         JUnitResults actualJunitResults = null;
         try {
-            actualJunitResults = new JUnitResults(base, this.junitResults, listener.getLogger());
+            actualJunitResults = new JUnitResults(tempdir, this.junitResultsGlob, listener.getLogger());
         } catch (JAXBException e) {
             listener.getLogger().println(e.getMessage());
         }
@@ -109,7 +125,10 @@ public class TestRailNotifier extends Notifier {
             if (cases == null || cases.isEmpty()) { continue; }
             Iterator<Testcase> iterator = cases.iterator();
             while (iterator.hasNext()) {
+
+
                 Testcase junitCase = iterator.next();
+
                 String junitCaseName = junitCase.getName();
                 int testrailCaseId;
 
@@ -257,7 +276,7 @@ public class TestRailNotifier extends Notifier {
             return FormValidation.ok();
         }
 
-        public FormValidation doCheckJunitResults(@QueryParameter String value)
+        public FormValidation doCheckJunitResultsGlob(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.length() == 0)
                 return FormValidation.warning("Please select test result path.");
