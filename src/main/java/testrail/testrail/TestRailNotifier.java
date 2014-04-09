@@ -28,28 +28,12 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Sample {@link Builder}.
- *
- * <p>
- * When the user configures the project and enables this builder,
- * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked
- * and a new {@link TestRailNotifier} is created. The created
- * instance is persisted to the project configuration XML by using
- * XStream, so this allows you to use instance fields (like {@link #testrailSuite})
- * to remember the configuration.
- *
- * <p>
- * When a build is performed, the {@link #perform(AbstractBuild, Launcher, BuildListener)}
- * method will be invoked. 
- *
- * @author Kohsuke Kawaguchi
- */
+
 public class TestRailNotifier extends Notifier {
 
-    private final String testrailProject;
-    private final String testrailSuite;
-    private final String junitResultsGlob;
+    private String testrailProject;
+    private String testrailSuite;
+    private String junitResultsGlob;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
@@ -59,20 +43,20 @@ public class TestRailNotifier extends Notifier {
         this.junitResultsGlob = junitResultsGlob;
     }
 
-    /**
-     * We'll use this from the <tt>config.jelly</tt>.
-     */
+    public void setTestrailProject(String project) { this.testrailProject = project;}
     public String getTestrailProject() { return this.testrailProject; }
+    public void setTestrailSuite(String suite) { this.testrailSuite = suite; }
     public String getTestrailSuite() { return this.testrailSuite; }
+    public void setJunitResultsGlob(String glob) { this.junitResultsGlob = glob; }
     public String getJunitResultsGlob() { return this.junitResultsGlob; }
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
-        TestRailClient testrail = new TestRailClient(
-                getDescriptor().getTestrailHost(),
-                getDescriptor().getTestrailUser(),
-                getDescriptor().getTestrailPassword());
+        TestRailClient  testrail = getDescriptor().getTestrailInstance();
+        testrail.setHost(getDescriptor().getTestrailHost());
+        testrail.setUser(getDescriptor().getTestrailUser());
+        testrail.setPassword(getDescriptor().getTestrailPassword());
 
         ExistingTestCases testCases = null;
         try {
@@ -104,9 +88,10 @@ public class TestRailNotifier extends Notifier {
         FilePath tempdir = new FilePath(Util.createTempDir());
         // This is an ugly way to not process old results.
         // I know that for a new result foo.xml there might be old results for that test
-        // named foo.0.xml, foo.1.xml, et al. This excludes those. I hope that it won't
+        // named foo.0.xml, foo.1.xml, etc. This excludes those. I hope that it won't
         // also exclude new vaid test results.
         String excludes = "**/*.*0.xml, **/*.*1.xml, **/*.*2.xml, **/*.*3.xml, **/*.*4.xml, **/*.*5.xml, **/*.*6.xml, **/*.*7.xml, **/*.*8.xml, **/*.*9.xml";
+        // BUGBUG: verify that the junitResultsGlob will work and fail with a message if not.
         build.getWorkspace().copyRecursiveTo(junitResultsGlob, excludes, tempdir);
 
         JUnitResults actualJunitResults = null;
@@ -210,12 +195,13 @@ public class TestRailNotifier extends Notifier {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private String testrailHost;
-        private String testrailUser;
-        private String testrailPassword;
+        private String testrailHost = "";
+        private String testrailUser = "";
+        private String testrailPassword = "";
+        private TestRailClient testrail = new TestRailClient("", "", "");
 
         /**
-         * In order to load the persisted global configuration, you have to 
+         * In order to load the persisted global configuration, you have to
          * call load() in the constructor.
          */
         public DescriptorImpl() {
@@ -235,10 +221,10 @@ public class TestRailNotifier extends Notifier {
             if (value.length() == 0) {
                 return FormValidation.error("Please set a project name.");
             }
-            TestRailClient testrail = new TestRailClient(getTestrailHost(),
-                    getTestrailUser(),
-                    getTestrailPassword());
-            if (!testrail.serverReachable() || !testrail.authenticationWorks()) {
+            testrail.setHost(getTestrailHost());
+            testrail.setUser(getTestrailUser());
+            testrail.setPassword(getTestrailPassword());
+            if (!getTestrailHost().isEmpty() || ! getTestrailUser().isEmpty() || !getTestrailPassword().isEmpty() || !testrail.serverReachable() || !testrail.authenticationWorks()) {
                 return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
             }
             try {
@@ -255,10 +241,10 @@ public class TestRailNotifier extends Notifier {
             if (value.length() == 0) {
                 return FormValidation.error("Please set a suite name.");
             }
-            TestRailClient testrail = new TestRailClient(getTestrailHost(),
-                    getTestrailUser(),
-                    getTestrailPassword());
-            if (!testrail.serverReachable() || !testrail.authenticationWorks()) {
+            testrail.setHost(getTestrailHost());
+            testrail.setUser(getTestrailUser());
+            testrail.setPassword(getTestrailPassword());
+            if (!getTestrailHost().isEmpty() || ! getTestrailUser().isEmpty() || !getTestrailPassword().isEmpty() || !testrail.serverReachable() || !testrail.authenticationWorks()) {
                 return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
             } else {
                 int projectId;
@@ -280,7 +266,7 @@ public class TestRailNotifier extends Notifier {
                 throws IOException, ServletException {
             if (value.length() == 0)
                 return FormValidation.warning("Please select test result path.");
-                // TODO: Should we check to see if the files exist? Probably not.
+            // TODO: Should we check to see if the files exist? Probably not.
             return FormValidation.ok();
         }
 
@@ -293,7 +279,9 @@ public class TestRailNotifier extends Notifier {
             if (!value.startsWith("http://") && !value.startsWith("https://")) {
                 return FormValidation.error("Host must be a valid URL.");
             }
-            TestRailClient testrail = new TestRailClient(value, "", "");
+            testrail.setHost(value);
+            testrail.setUser("");
+            testrail.setPassword("");
             if (!testrail.serverReachable()) {
                 return FormValidation.error("Host is not reachable.");
             }
@@ -301,14 +289,16 @@ public class TestRailNotifier extends Notifier {
         }
 
         public FormValidation doCheckTestrailUser(@QueryParameter String value,
-                                                   @QueryParameter String testrailHost,
-                                                   @QueryParameter String testrailPassword)
+                                                  @QueryParameter String testrailHost,
+                                                  @QueryParameter String testrailPassword)
                 throws IOException, ServletException {
             if (value.length() == 0) {
                 return FormValidation.warning("Please add your user's email address.");
             }
             if (testrailPassword.length() > 0) {
-                TestRailClient testrail = new TestRailClient(testrailHost, value, testrailPassword);
+                testrail.setHost(testrailHost);
+                testrail.setUser(value);
+                testrail.setPassword(testrailPassword);
                 if (testrail.serverReachable() && !testrail.authenticationWorks()){
                     return FormValidation.error("Invalid user/password combination.");
                 }
@@ -324,7 +314,9 @@ public class TestRailNotifier extends Notifier {
                 return FormValidation.warning("Please add your password.");
             }
             if (testrailUser.length() > 0) {
-                TestRailClient testrail = new TestRailClient(testrailHost, testrailUser, value);
+                testrail.setHost(testrailHost);
+                testrail.setUser(testrailUser);
+                testrail.setPassword(value);
                 if (testrail.serverReachable() && !testrail.authenticationWorks()){
                     return FormValidation.error("Invalid user/password combination.");
                 }
@@ -333,7 +325,7 @@ public class TestRailNotifier extends Notifier {
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            // Indicates that this builder can be used with all kinds of project types 
+            // Indicates that this builder can be used with all kinds of project types
             return true;
         }
 
@@ -364,8 +356,13 @@ public class TestRailNotifier extends Notifier {
          * The method name is bit awkward because global.jelly calls this method to determine
          * the initial state of the checkbox by the naming convention.
          */
+        public void setTestrailHost(String host) { this.testrailHost = host; }
         public String getTestrailHost() { return testrailHost; }
+        public void setTestrailUser(String user) { this.testrailUser = user; }
         public String getTestrailUser() { return testrailUser; }
+        public void setTestrailPassword(String password) { this.testrailPassword = password; }
         public String getTestrailPassword() { return testrailPassword; }
+        public void setTestrailInstance(TestRailClient trc) { testrail = trc; }
+        public TestRailClient getTestrailInstance() { return testrail; }
     }
 }

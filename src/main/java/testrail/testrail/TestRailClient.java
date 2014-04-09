@@ -21,10 +21,17 @@ import java.io.UnsupportedEncodingException;
  * Created by Drew on 3/19/14.
  */
 public class TestRailClient {
-    private final String host;
-    private final String user;
-    private final String password;
+    private String host;
+    private String user;
+    private String password;
     private ObjectMapper objectMapper;
+
+    public void setHost(String host) { this.host = host; }
+    public void setUser(String user) { this.user = user; }
+    public void setPassword(String password) {this.password = password; }
+    public String getHost() { return this.host; }
+    public String getUser() { return this.user; }
+    public String getPassword() { return this.password; }
 
     public TestRailClient(String host, String user, String password) {
         this.host = host;
