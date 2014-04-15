@@ -1,3 +1,21 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package testrail.testrail;
 
 import hudson.Extension;
@@ -91,7 +109,6 @@ public class TestRailNotifier extends Notifier {
         // named foo.0.xml, foo.1.xml, etc. This excludes those. I hope that it won't
         // also exclude new vaid test results.
         String excludes = "**/*.*0.xml, **/*.*1.xml, **/*.*2.xml, **/*.*3.xml, **/*.*4.xml, **/*.*5.xml, **/*.*6.xml, **/*.*7.xml, **/*.*8.xml, **/*.*9.xml";
-        // BUGBUG: verify that the junitResultsGlob will work and fail with a message if not.
         build.getWorkspace().copyRecursiveTo(junitResultsGlob, excludes, tempdir);
 
         JUnitResults actualJunitResults = null;
@@ -110,8 +127,6 @@ public class TestRailNotifier extends Notifier {
             if (cases == null || cases.isEmpty()) { continue; }
             Iterator<Testcase> iterator = cases.iterator();
             while (iterator.hasNext()) {
-
-
                 Testcase junitCase = iterator.next();
 
                 String junitCaseName = junitCase.getName();
@@ -144,7 +159,6 @@ public class TestRailNotifier extends Notifier {
                 } else {
                     testrailCaseStatus = 1; // Passed
                 }
-
                 results.addResult(new Result(testrailCaseId, testrailCaseStatus, testrailCaseComment));
             }
         }

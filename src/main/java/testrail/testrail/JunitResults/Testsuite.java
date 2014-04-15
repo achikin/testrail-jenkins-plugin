@@ -1,12 +1,22 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package testrail.testrail.JunitResults;
-
-/*
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
-import java.util.List;
-*/
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,36 +26,7 @@ import java.util.List;
 /**
  * Created by Drew on 3/24/2014.
  */
-/*
-@JacksonXmlRootElement(localName = "testsuite")
-public class Testsuite {
-    @JacksonXmlProperty(isAttribute = true)
-    private String name;
-    // float time; // not sure how I want to convert to TestRail time yet.
-    @JacksonXmlProperty(isAttribute = true)
-    private int failures;
-    @JacksonXmlProperty(isAttribute = true)
-    private int errors;
-    @JacksonXmlProperty(isAttribute = true)
-    private int skipped;
-
-    @JacksonXmlProperty(localName = "testcase", isAttribute = false)
-    @JacksonXmlElementWrapper(useWrapping = false)
-    private List<Testcase> cases;
-    public void setName(String name) { this.name = name; }
-    public void setCases(List<Testcase> cases) { this.cases = cases; }
-    public void setFailures(int failures) { this.failures = failures; }
-    public void setErrors(int errors) { this.errors = errors; }
-    public void setSkipped(int skipped) { this.skipped = skipped; }
-
-    public String getName() { return this.name; }
-    public List<Testcase> getCases() { return this.cases; }
-    public int getFailures() { return this.failures; }
-    public int getErrors() { return this.errors; }
-    public int getSkipped() { return this.skipped; }
-
-} */
-@XmlRootElement // do I need to tell it the element is "testsuite"?
+@XmlRootElement
 public class Testsuite {
     private String name;
     private int failures;
@@ -69,8 +50,4 @@ public class Testsuite {
     public int getFailures() { return this.failures; }
     public int getErrors() { return this.errors; }
     public int getSkipped() { return this.skipped; }
-
-
-
-
 }

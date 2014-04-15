@@ -1,3 +1,21 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package testrail.testrail;
 
 import com.gargoylesoftware.htmlunit.WebAssert;
@@ -31,25 +49,10 @@ import java.util.concurrent.ExecutionException;
 import static org.mockito.Matchers.*;
 
 public class ProcessResultsTest {
-    // TODO: Tests for master and for slaves.
-
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
-       /* @Test public void first() throws Exception {
-        FreeStyleProject project = j.createFreeStyleProject("my project");
-        project.getBuildersList().add(new BatchFile("echo hello"));
-        FreeStyleBuild build = project.scheduleBuild2(0).get();
-        System.out.println(build.getDisplayName() + " completed");
-        // TODO: change this to use HtmlUnit
-        String s = FileUtils.readFileToString(build.getLogFile());
-        System.out.println("log: " + s);
-        assertThat(s, Matchers.containsString("echo hello"));
-    } */
-
     FreeStyleProject project;
-    //@Mock ArrayList<Case> cases;
-    //@Mock ArrayList<Section> sections;
     TestRailClient testrail;
     @Before
     public void setup() throws IOException, ElementNotFoundException {
