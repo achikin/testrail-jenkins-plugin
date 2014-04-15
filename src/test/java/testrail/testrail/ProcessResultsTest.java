@@ -114,14 +114,14 @@ public class ProcessResultsTest {
         TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
-                new TestBuilder() {
-                    @Override
-                    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
-                        String result = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
-                        build.getWorkspace().child("result.xml").write(result, "UTF-8");
-                        return true;
-                    }
+            new TestBuilder() {
+                @Override
+                public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
+                    String result = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
+                    build.getWorkspace().child("result.xml").write(result, "UTF-8");
+                    return true;
                 }
+            }
         );
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
@@ -133,18 +133,18 @@ public class ProcessResultsTest {
         TestRailNotifier notifier = new TestRailNotifier("project","suite","**/*.xml");
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
-                new TestBuilder() {
-                    @Override
-                    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
-                        String result1 = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
-                        build.getWorkspace().child("result.xml").write(result1, "UTF-8");
-                        String result2 = "<testsuite name=\"section2\"><testcase name=\"case1\"></testcase></testsuite>";
-                        build.getWorkspace().child("nested").child("more_results.xml").write(result2, "UTF-8");
-                        String result3 = "<testsuite name=\"section2\"><testcase name=\"case1\"></testcase></testsuite>";
-                        build.getWorkspace().child("nested2").child("more_nesting").child("still_more_results.xml").write(result3, "UTF-8");
-                        return true;
-                    }
+            new TestBuilder() {
+                @Override
+                public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
+                    String result1 = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
+                    build.getWorkspace().child("result.xml").write(result1, "UTF-8");
+                    String result2 = "<testsuite name=\"section2\"><testcase name=\"case1\"></testcase></testsuite>";
+                    build.getWorkspace().child("nested").child("more_results.xml").write(result2, "UTF-8");
+                    String result3 = "<testsuite name=\"section2\"><testcase name=\"case1\"></testcase></testsuite>";
+                    build.getWorkspace().child("nested2").child("more_nesting").child("still_more_results.xml").write(result3, "UTF-8");
+                    return true;
                 }
+            }
         );
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
@@ -156,14 +156,14 @@ public class ProcessResultsTest {
         TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
-                new TestBuilder() {
-                    @Override
-                    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
-                        String result = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
-                        build.getWorkspace().child("result.xml").write(result, "UTF-8");
-                        return true;
-                    }
+            new TestBuilder() {
+                @Override
+                public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
+                    String result = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
+                    build.getWorkspace().child("result.xml").write(result, "UTF-8");
+                    return true;
                 }
+            }
         );
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
@@ -175,14 +175,14 @@ public class ProcessResultsTest {
         TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
-                new TestBuilder() {
-                    @Override
-                    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
-                        String result = "<testsuite name=\"section2\"><testcase name=\"case1\"></testcase><testcase name=\"case2\"></testcase><testcase name=\"case3\">ERRROR</testcase></testsuite>";
-                        build.getWorkspace().child("results.xml").write(result, "UTF-8");
-                        return true;
-                    }
+            new TestBuilder() {
+                @Override
+                public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
+                    String result = "<testsuite name=\"section2\"><testcase name=\"case1\"></testcase><testcase name=\"case2\"></testcase><testcase name=\"case3\">ERRROR</testcase></testsuite>";
+                    build.getWorkspace().child("results.xml").write(result, "UTF-8");
+                    return true;
                 }
+            }
         );
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
@@ -194,14 +194,14 @@ public class ProcessResultsTest {
         TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
-                new TestBuilder() {
-                    @Override
-                    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
-                        String result = "<testsuite name=\"section1\"><testcase name=\"case1\">This failed in some way.</testcase></testsuite>";
-                        build.getWorkspace().child("result.xml").write(result, "UTF-8");
-                        return false;
-                    }
+            new TestBuilder() {
+                @Override
+                public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
+                    String result = "<testsuite name=\"section1\"><testcase name=\"case1\">This failed in some way.</testcase></testsuite>";
+                    build.getWorkspace().child("result.xml").write(result, "UTF-8");
+                    return false;
                 }
+            }
         );
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
@@ -218,14 +218,14 @@ public class ProcessResultsTest {
         project.getPublishersList().add(notifier);
         project.setAssignedLabel(label);
         project.getBuildersList().add(
-                new TestBuilder() {
-                    @Override
-                    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
-                        String result = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
-                        build.getWorkspace().child("result.xml").write(result, "UTF-8");
-                        return true;
-                    }
+            new TestBuilder() {
+                @Override
+                public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener buildListener) throws InterruptedException, IOException {
+                    String result = "<testsuite name=\"section1\"><testcase name=\"case1\"></testcase></testsuite>";
+                    build.getWorkspace().child("result.xml").write(result, "UTF-8");
+                    return true;
                 }
+            }
         );
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
