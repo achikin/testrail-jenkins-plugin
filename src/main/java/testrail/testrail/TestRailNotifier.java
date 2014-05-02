@@ -169,7 +169,7 @@ public class TestRailNotifier extends Notifier {
         TestRailResponse response = testrail.addResultsForCases(runId, results);
         boolean buildResult = (200 == response.getStatus());
         if (buildResult) {
-            listener.getLogger().println("Successfully uploaded test reaults.");
+            listener.getLogger().println("Successfully uploaded test results.");
         } else {
             listener.getLogger().println("Failed to add results to TestRail.");
             listener.getLogger().println("status: " + response.getStatus());

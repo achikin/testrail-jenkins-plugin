@@ -99,7 +99,7 @@ public class ProcessResultsTest {
     @After public void teardown() throws IOException, SAXException {
         HtmlPage page = j.createWebClient().goTo("job/testProject/lastBuild/console");
         System.out.println("page: " + page.asText());
-        WebAssert.assertTextPresent(page, "Successfully uploaded test reaults");
+        WebAssert.assertTextPresent(page, "Successfully uploaded test results");
     }
 
     @Test
