@@ -104,12 +104,8 @@ public class TestRailNotifier extends Notifier {
         // process the temp files.
         // it looks like the destructor deletes the temp dir when we're finished
         FilePath tempdir = new FilePath(Util.createTempDir());
-        // This is an ugly way to not process old results.
-        // I know that for a new result foo.xml there might be old results for that test
-        // named foo.0.xml, foo.1.xml, etc. This excludes those. I hope that it won't
-        // also exclude new vaid test results.
-        String excludes = "**/*.*0.xml, **/*.*1.xml, **/*.*2.xml, **/*.*3.xml, **/*.*4.xml, **/*.*5.xml, **/*.*6.xml, **/*.*7.xml, **/*.*8.xml, **/*.*9.xml";
-        build.getWorkspace().copyRecursiveTo(junitResultsGlob, excludes, tempdir);
+        // This picks up *all* result files so if you have old results in the same directory we'll see those, too.
+        build.getWorkspace().copyRecursiveTo(junitResultsGlob, "", tempdir);
 
         JUnitResults actualJunitResults = null;
         try {
