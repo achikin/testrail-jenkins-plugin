@@ -104,8 +104,8 @@ public class ExistingTestCases {
         throw new ElementNotFoundException(sectionName);
     }
 
-    public int addSection(String sectionName) throws IOException, ElementNotFoundException {
-        Section addedSection = testRailClient.addSection(sectionName, projectId, suiteId);
+    public int addSection(String sectionName, Integer parentId) throws IOException, ElementNotFoundException {
+        Section addedSection = testRailClient.addSection(sectionName, projectId, suiteId, parentId);
         sections.add(addedSection);
         return addedSection.getId();
     }

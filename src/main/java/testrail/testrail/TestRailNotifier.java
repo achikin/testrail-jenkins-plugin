@@ -114,49 +114,8 @@ public class TestRailNotifier extends Notifier {
             listener.getLogger().println(e.getMessage());
         }
         List<Testsuite> suites = actualJunitResults.getSuites();
-        Iterator<Testsuite> testsuiteIterator = suites.iterator();
-        while (testsuiteIterator.hasNext()) {
-            Testsuite suite = testsuiteIterator.next();
-            String junitSuiteName = suite.getName();
-            List<Testcase> cases = suite.getCases();
-
-            if (cases == null || cases.isEmpty()) { continue; }
-            Iterator<Testcase> iterator = cases.iterator();
-            while (iterator.hasNext()) {
-                Testcase junitCase = iterator.next();
-
-                String junitCaseName = junitCase.getName();
-                int testrailCaseId;
-
-                try {
-                    testrailCaseId = testCases.getCaseId(junitSuiteName, junitCaseName);
-                } catch (ElementNotFoundException e) {
-                    int sectionId;
-                    try {
-                        sectionId = testCases.getSectionId(junitSuiteName);
-                    } catch (ElementNotFoundException e2) {
-                        try {
-                            sectionId = testCases.addSection(junitSuiteName);
-                        } catch (ElementNotFoundException e3) {
-                            listener.getLogger().println("Unable to add test section " + junitSuiteName);
-                            listener.getLogger().println(e.getMessage());
-                            return false;
-                        }
-                    }
-                    testrailCaseId = testCases.addCase(junitCaseName, sectionId);
-                }
-
-                int testrailCaseStatus;
-                String testrailCaseComment = null;
-                Failure testrailCaseFailure = junitCase.getFailure();
-                if (testrailCaseFailure != null)  {
-                    testrailCaseStatus = 5; // Failed
-                    testrailCaseComment = testrailCaseFailure.getText();
-                } else {
-                    testrailCaseStatus = 1; // Passed
-                }
-                results.addResult(new Result(testrailCaseId, testrailCaseStatus, testrailCaseComment));
-            }
+        for (Testsuite suite: suites) {
+            results.merge(addSuite(suite, null, testCases));
         }
 
         listener.getLogger().println("Uploading results to TestRail.");
@@ -176,6 +135,49 @@ public class TestRailNotifier extends Notifier {
         return buildResult;
     }
 
+    public Results addSuite(Testsuite suite, Integer parentId, ExistingTestCases existingCases) throws IOException {
+        //figure out TR sectionID
+        Integer sectionId;
+        try {
+            sectionId = existingCases.getSectionId(suite.getName());
+        } catch (ElementNotFoundException e1) {
+            try {
+                sectionId = existingCases.addSection(suite.getName(), parentId);
+            } catch (ElementNotFoundException e) {
+                //listener.getLogger().println("Unable to add test section " + suite.getName());
+                //listener.getLogger().println(e.getMessage());
+                return null;
+            }
+        }
+        //if we have any subsections - process them
+        Results results = new Results();
+        if (suite.hasSuits()) {
+            for (Testsuite subsuite : suite.getSuits()) {
+                results.merge(addSuite(subsuite, sectionId, existingCases));
+            }
+        }
+        if (suite.hasCases()) {
+            for (Testcase testcase : suite.getCases()) {
+                int caseId;
+                try {
+                    caseId = existingCases.getCaseId(suite.getName(), testcase.getName());
+                } catch (ElementNotFoundException e) {
+                    caseId = existingCases.addCase(testcase.getName(), sectionId);
+                }
+                int caseStatus;
+                String caseComment = null;
+                Failure caseFailure = testcase.getFailure();
+                if (caseFailure != null) {
+                    caseStatus = 5; // Failed
+                    caseComment = caseFailure.getText();
+                } else {
+                    caseStatus = 1; // Passed
+                }
+                results.addResult(new Result(caseId, caseStatus, caseComment));
+            }
+        }
+        return results;
+    }
     // Overridden for better type safety.
     // If your plugin doesn't really define any property on Descriptor,
     // you don't have to do this.
@@ -374,5 +376,6 @@ public class TestRailNotifier extends Notifier {
         public String getTestrailPassword() { return testrailPassword; }
         public void setTestrailInstance(TestRailClient trc) { testrail = trc; }
         public TestRailClient getTestrailInstance() { return testrail; }
+
     }
 }

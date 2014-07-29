@@ -167,10 +167,11 @@ public class TestRailClient {
         return this.objectMapper.readValue(body, Section[].class);
     }
 
-    public Section addSection(String sectionName, int projectId, int suiteId) throws IOException, ElementNotFoundException {
+    public Section addSection(String sectionName, int projectId, int suiteId, Integer parentId) throws IOException, ElementNotFoundException {
         Section section = new Section();
         section.setName(sectionName);
         section.setSuiteId(suiteId);
+        section.setParentId(parentId);
         String payload = this.objectMapper.writeValueAsString(section);
         String body = httpPost("index.php?/api/v2/add_section/" + projectId , payload).getBody();
         return this.objectMapper.readValue(body, Section.class);
