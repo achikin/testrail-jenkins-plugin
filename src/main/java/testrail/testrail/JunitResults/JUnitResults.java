@@ -49,7 +49,7 @@ public class JUnitResults {
 
     public void slurpTestResults(String fileMatchers) throws IOException, JAXBException, InterruptedException {
         Suites = new ArrayList<Testsuite>();
-        JAXBContext jaxbContext = JAXBContext.newInstance(Testsuite.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(Testsuites.class);
         final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
         final DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
@@ -62,19 +62,24 @@ public class JUnitResults {
                 scanner.scan(f, new FileVisitor() {
                     @Override
                     public void visit(File file, String s) throws IOException {
-                        Testsuite suite = null;
+                        Testsuites suites = null;
                         logger.println("processing " + file.getName());
                         try {
-                            suite = (Testsuite) jaxbUnmarshaller.unmarshal(file);
+                            suites = (Testsuites) jaxbUnmarshaller.unmarshal(file);
                         } catch (JAXBException e) {
                             e.printStackTrace();
                         }
-                        Suites.add(suite);
+                        if (suites.hasSuites()) {
+                            for (Testsuite suite : suites.getSuites()) {
+                                Suites.add(suite);
+                            }
+                        }
                     }
                 });
                 return null;
-            }});
-        }
+            }
+        });
+    }
 
     public List<Testsuite> getSuites() {
         return this.Suites;
