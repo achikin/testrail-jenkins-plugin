@@ -33,7 +33,8 @@ import testrail.testrail.TestRailObjects.*;
 import javax.xml.ws.http.HTTPException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
+import java.util.List;
+import static testrail.testrail.Utils.*;
 /**
  * Created by Drew on 3/19/14.
  */
@@ -191,17 +192,32 @@ public class TestRailClient {
         return response;
     }
 
-    public int addRun(int projectId, int suiteId, String description)
+    public int addRun(int projectId, int suiteId, String milestoneID, String description)
             throws JsonProcessingException, UnsupportedEncodingException, IOException {
+        log("addRun", "milestone_id=", milestoneID);
         Run run = new Run();
         run.setSuiteId(suiteId);
         run.setDescription(description);
+        run.setMilestoneId(milestoneID);
         String payload = this.objectMapper.writeValueAsString(run);
         String body = httpPost("index.php?/api/v2/add_run/" + projectId, payload).getBody();
         Run result = this.objectMapper.readValue(body, Run.class);
         return result.getId();
     }
-
+    public Milestone[] getMilestones(int projectId) throws IOException, ElementNotFoundException {
+        String body = httpGet("index.php?/api/v2/get_milestones/" + projectId).getBody();
+        System.console().printf(body);
+        return this.objectMapper.readValue(body, Milestone[].class);
+    }
+    public String getMilestoneID(String milesoneName, int projectId) throws IOException, ElementNotFoundException {
+      for (Milestone mstone: getMilestones(projectId)) {
+         if (mstone.getName().equals(milesoneName)) {
+             log("MilestoneId", mstone.getId());
+             return mstone.getId();
+         }
+      }
+      throw new ElementNotFoundException("Milestone id not found.");
+    }
     public boolean closeRun(int runId)
             throws JsonProcessingException, UnsupportedEncodingException, IOException {
         String payload = "";

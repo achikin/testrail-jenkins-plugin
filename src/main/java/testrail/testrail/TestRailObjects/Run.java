@@ -24,18 +24,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by Drew on 3/24/2014.
  */
 public class Run {
+    @JsonProperty("suite_id")
     private int suiteId;
     private int id;
+    @JsonProperty("description")
     private String description;
-
-    @JsonProperty("suite_id")
+    private String milestone_id;
     public void setSuiteId(int suiteId) {
         this.suiteId = suiteId;
     }
     public void setId(int id) { this.id = id; }
-    @JsonProperty("description")
     public void setDescription(String description) { this.description = description; }
-
     public int getSuiteId() {
         return this.suiteId;
     }
@@ -43,4 +42,6 @@ public class Run {
         return this.id;
     }
     public String getDescription() { return this.description; }
+    public void setMilestoneId(String mid) { this.milestone_id = mid; }
+    public String getMilestoneId() {return this.milestone_id; }
 }

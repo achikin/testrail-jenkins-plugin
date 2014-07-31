@@ -18,4 +18,13 @@
   <f:entry title="Test Report XMLs" field="junitResultsGlob">
     <f:textbox />
   </f:entry>
+  <f:block>
+       <table>
+         <f:optionalBlock name="enableMilestone" title="Use milestone" inline="true" checked="${instance.enableMilestone}">
+           <f:entry title="Milestone" field="testrailMilestone">
+             <f:textbox/>
+           </f:entry>
+         </f:optionalBlock>
+       </table>
+  </f:block>
 </j:jelly>

@@ -18,6 +18,7 @@
  */
 package testrail.testrail;
 
+import com.jcraft.jsch.Logger;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -25,6 +26,7 @@ import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.util.ListBoxModel;
 import hudson.tasks.*;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
@@ -35,30 +37,30 @@ import testrail.testrail.JunitResults.Failure;
 import testrail.testrail.JunitResults.JUnitResults;
 import testrail.testrail.JunitResults.Testcase;
 import testrail.testrail.JunitResults.Testsuite;
-import testrail.testrail.TestRailObjects.ElementNotFoundException;
-import testrail.testrail.TestRailObjects.ExistingTestCases;
-import testrail.testrail.TestRailObjects.Result;
-import testrail.testrail.TestRailObjects.Results;
+import testrail.testrail.TestRailObjects.*;
 
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
+import static testrail.testrail.Utils.*;
 
 public class TestRailNotifier extends Notifier {
 
     private String testrailProject;
     private String testrailSuite;
     private String junitResultsGlob;
-
+    private String testrailMilestone;
+    private boolean enableMilestone;
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public TestRailNotifier(String testrailProject, String testrailSuite, String junitResultsGlob) {
+    public TestRailNotifier(String testrailProject, String testrailSuite, String junitResultsGlob, String testrailMilestone, boolean enableMilestone) {
         this.testrailProject = testrailProject;
         this.testrailSuite = testrailSuite;
         this.junitResultsGlob = junitResultsGlob;
+        this.testrailMilestone = testrailMilestone;
+        this.enableMilestone = enableMilestone;
     }
 
     public void setTestrailProject(String project) { this.testrailProject = project;}
@@ -67,6 +69,10 @@ public class TestRailNotifier extends Notifier {
     public String getTestrailSuite() { return this.testrailSuite; }
     public void setJunitResultsGlob(String glob) { this.junitResultsGlob = glob; }
     public String getJunitResultsGlob() { return this.junitResultsGlob; }
+    public String getTestrailMilestone() { return this.testrailMilestone; }
+    public void setTestrailMilestone(String milestone) { this.testrailMilestone = milestone; }
+    public void setEnableMilestone(boolean mstone) {this.enableMilestone = mstone; }
+    public boolean getEnableMilestone() { return  this.enableMilestone; }
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
@@ -120,7 +126,15 @@ public class TestRailNotifier extends Notifier {
 
         listener.getLogger().println("Uploading results to TestRail.");
         String runComment = "Automated results from Jenkins: " + BuildWrapper.all().jenkins.getRootUrl() + "/" + build.getUrl().toString();
-        int runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), runComment);
+        String milestoneId = "null";
+        if (this.enableMilestone) {
+            try {
+                milestoneId = testrail.getMilestoneID(this.testrailMilestone, testCases.getProjectId());
+            } catch (ElementNotFoundException e) {
+                listener.getLogger().println(e.getMessage());
+            }
+        }
+        int runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
         TestRailResponse response = testrail.addResultsForCases(runId, results);
         boolean buildResult = (200 == response.getStatus());
         if (buildResult) {
@@ -230,6 +244,7 @@ public class TestRailNotifier extends Notifier {
          */
         public FormValidation doCheckTestrailProject(@QueryParameter String value)
                 throws IOException, ServletException {
+            System.console().printf("into checkproject");
             if (value.length() == 0) {
                 return FormValidation.error("Please set a project name.");
             }
@@ -250,6 +265,8 @@ public class TestRailNotifier extends Notifier {
         public FormValidation doCheckTestrailSuite(@QueryParameter String value,
                                                    @QueryParameter String testrailProject)
                 throws IOException, ServletException {
+            System.console().printf("into checksuite");
+            log("Testrail Project is ", testrailProject);
             if (value.length() == 0) {
                 return FormValidation.error("Please set a suite name.");
             }
@@ -336,6 +353,22 @@ public class TestRailNotifier extends Notifier {
             return FormValidation.ok();
         }
 
+        public FormValidation doCheckTestrailMilestone(@QueryParameter String value, @QueryParameter String testrailProject)
+          throws IOException, ServletException {
+            log("Into checkmilestone");
+            log("Project name is ", testrailProject);
+            if (value.length() == 0) {
+                return  FormValidation.warning("Please set milestone name");
+            }
+            try {
+                testrail.getMilestoneID(value, testrail.getProjectId(testrailProject));
+                return FormValidation.ok();
+            } catch (ElementNotFoundException e) {
+                FormValidation.error("Wrong milestone");
+            }
+            return FormValidation.error("Milestone does not exist in the project.");
+        }
+
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
             // Indicates that this builder can be used with all kinds of project types
             return true;
@@ -350,11 +383,13 @@ public class TestRailNotifier extends Notifier {
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+            System.console().printf("into configure");
             // To persist global configuration information,
             // set that to properties and call save().
             testrailHost = formData.getString("testrailHost");
             testrailUser = formData.getString("testrailUser");
             testrailPassword = formData.getString("testrailPassword");
+
 
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setTestrailHost)
