@@ -76,8 +76,8 @@ public class ProcessResultsTest {
            }
         });
         Mockito.when(testrail.getSections(eq(1), eq(1))).thenReturn(new Section[]{});
-        Mockito.when(testrail.addRun(eq(1), eq(1), anyString())).thenReturn(1);
-        Mockito.when(testrail.addSection(anyString(), eq(1), eq(1))).thenAnswer(new Answer<Section>() {
+        Mockito.when(testrail.addRun(eq(1), eq(1), anyString(), anyString())).thenReturn(1);
+        Mockito.when(testrail.addSection(anyString(), eq(1), eq(1), eq(1))).thenAnswer(new Answer<Section>() {
             public Section answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
                 Section result = new Section();
@@ -104,14 +104,14 @@ public class ProcessResultsTest {
 
     @Test
     public void noResults() throws ExecutionException, InterruptedException, IOException, ElementNotFoundException, SAXException {
-        TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         build.run();
     }
 
     @Test public void resultsNotNested() throws ExecutionException, InterruptedException, IOException {
-        TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
             new TestBuilder() {
@@ -130,7 +130,7 @@ public class ProcessResultsTest {
     }
 
     @Test public void nestedResults() throws ExecutionException, InterruptedException, IOException, SAXException {
-        TestRailNotifier notifier = new TestRailNotifier("project","suite","**/*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"**/*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
             new TestBuilder() {
@@ -153,7 +153,7 @@ public class ProcessResultsTest {
     }
 
     @Test public void parseSuccess() throws ExecutionException, InterruptedException, IOException, SAXException {
-        TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
             new TestBuilder() {
@@ -172,7 +172,7 @@ public class ProcessResultsTest {
     }
 
     @Test public void parseMultipleResultsInFile() throws ExecutionException, InterruptedException {
-        TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
             new TestBuilder() {
@@ -191,7 +191,7 @@ public class ProcessResultsTest {
     }
 
     @Test public void parseError() throws ExecutionException, InterruptedException, IOException, SAXException {
-        TestRailNotifier notifier = new TestRailNotifier("project","suite","*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         project.getBuildersList().add(
             new TestBuilder() {
@@ -214,7 +214,7 @@ public class ProcessResultsTest {
         SlaveComputer computer = slave.getComputer();
         computer.connect(false).get(); // apparently this spins until connected
         LabelAtom label = slave.getSelfLabel();
-        TestRailNotifier notifier = new TestRailNotifier("project", "suite", "*.xml");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"*.xml", "mstone", true);
         project.getPublishersList().add(notifier);
         project.setAssignedLabel(label);
         project.getBuildersList().add(

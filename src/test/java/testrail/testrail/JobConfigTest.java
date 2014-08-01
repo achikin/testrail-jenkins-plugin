@@ -45,7 +45,7 @@ public class JobConfigTest {
     @Before
     public void initialize() throws IOException, SAXException, ElementNotFoundException {
         project = j.createFreeStyleProject("testProject");
-        TestRailNotifier notifier = new TestRailNotifier("","","");
+        TestRailNotifier notifier = new TestRailNotifier(1,1,"","",true);
         project.getPublishersList().add(notifier);
         page = j.createWebClient().goTo("job/testProject/configure");
     }
