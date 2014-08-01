@@ -1,7 +1,20 @@
 testrail-jenkins-plugin
 =======================
 
+Forked from  https://github.com/simplymeasured/testrail-jenkins-plugin
 Integrate test results from Jenkins into TestRail.
+Upload your junit test results to TestRail after every run.
+Each Jenkins build becomes test run.
+Each testsuite becomes test group.
+
+
+This fork changelog
+---------------
+- fixed validation issues
+- added milestone support
+- fixed junit files parsing
+- added nested <testsuite> tags support in junit
+- added dropdown lists to select projects, suites and milestones
 
 Build
 -----

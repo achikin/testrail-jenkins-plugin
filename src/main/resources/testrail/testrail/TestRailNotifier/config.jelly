@@ -10,10 +10,10 @@
     When submitted, it will be passed to the corresponding constructor parameter.
   -->
   <f:entry title="Project" field="testrailProject">
-    <f:textbox />
+    <f:select />
   </f:entry>
   <f:entry title="Suite" field="testrailSuite">
-    <f:textbox />
+    <f:select />
   </f:entry>
   <f:entry title="Test Report XMLs" field="junitResultsGlob">
     <f:textbox />
@@ -22,7 +22,7 @@
        <table>
          <f:optionalBlock name="enableMilestone" title="Use milestone" inline="true" checked="${instance.enableMilestone}">
            <f:entry title="Milestone" field="testrailMilestone">
-             <f:textbox/>
+             <f:select />
            </f:entry>
          </f:optionalBlock>
        </table>

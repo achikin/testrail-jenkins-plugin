@@ -130,9 +130,14 @@ public class TestRailClient {
         return (200 == response.getStatus());
     }
 
-    public int getProjectId(String projectName) throws IOException, ElementNotFoundException {
+    public Project[] getProjects() throws IOException, ElementNotFoundException {
         String body = httpGet("/index.php?/api/v2/get_projects").getBody();
         Project[] projects = this.objectMapper.readValue(body, Project[].class);
+        return projects;
+    }
+
+    public int getProjectId(String projectName) throws IOException, ElementNotFoundException {
+        Project[] projects = getProjects();
         for(int i = 0; i < projects.length; i++) {
             if (projects[i].getName().equals(projectName)) {
                 return projects[i].getId();
@@ -142,8 +147,7 @@ public class TestRailClient {
     }
 
     public int getSuiteId(int projectId, String suiteName) throws IOException, ElementNotFoundException {
-        String body = httpGet("/index.php?/api/v2/get_suites/" + projectId).getBody();
-        Suite[] suites = this.objectMapper.readValue(body, Suite[].class);
+        Suite[] suites = getSuits(projectId);
         for (int i = 0; i < suites.length; i++) {
             if (suites[i].getName().equals(suiteName)) {
                 return suites[i].getId();
@@ -152,6 +156,11 @@ public class TestRailClient {
         throw new ElementNotFoundException(suiteName);
     }
 
+    public Suite[] getSuits(int projectId) throws IOException, ElementNotFoundException {
+        String body = httpGet("/index.php?/api/v2/get_suites/" + projectId).getBody();
+        Suite[] suites = this.objectMapper.readValue(body, Suite[].class);
+        return suites;
+    }
     public String getCasesString(int projectId, int suiteId) {
         String result = "index.php?/api/v2/get_cases/" + projectId + "&suite_id=" + suiteId;
         return result;
@@ -194,7 +203,6 @@ public class TestRailClient {
 
     public int addRun(int projectId, int suiteId, String milestoneID, String description)
             throws JsonProcessingException, UnsupportedEncodingException, IOException {
-        log("addRun", "milestone_id=", milestoneID);
         Run run = new Run();
         run.setSuiteId(suiteId);
         run.setDescription(description);
@@ -204,20 +212,21 @@ public class TestRailClient {
         Run result = this.objectMapper.readValue(body, Run.class);
         return result.getId();
     }
+
     public Milestone[] getMilestones(int projectId) throws IOException, ElementNotFoundException {
         String body = httpGet("index.php?/api/v2/get_milestones/" + projectId).getBody();
-        System.console().printf(body);
         return this.objectMapper.readValue(body, Milestone[].class);
     }
+
     public String getMilestoneID(String milesoneName, int projectId) throws IOException, ElementNotFoundException {
       for (Milestone mstone: getMilestones(projectId)) {
          if (mstone.getName().equals(milesoneName)) {
-             log("MilestoneId", mstone.getId());
              return mstone.getId();
          }
       }
       throw new ElementNotFoundException("Milestone id not found.");
     }
+
     public boolean closeRun(int runId)
             throws JsonProcessingException, UnsupportedEncodingException, IOException {
         String payload = "";

@@ -40,4 +40,6 @@ public class Project {
     public String getName() {
         return this.name;
     }
+
+    public String getStringId() { return Integer.toString(id); }
 }

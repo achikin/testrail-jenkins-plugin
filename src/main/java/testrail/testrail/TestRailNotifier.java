@@ -48,14 +48,14 @@ import static testrail.testrail.Utils.*;
 
 public class TestRailNotifier extends Notifier {
 
-    private String testrailProject;
-    private String testrailSuite;
+    private int testrailProject;
+    private int testrailSuite;
     private String junitResultsGlob;
     private String testrailMilestone;
     private boolean enableMilestone;
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public TestRailNotifier(String testrailProject, String testrailSuite, String junitResultsGlob, String testrailMilestone, boolean enableMilestone) {
+    public TestRailNotifier(int testrailProject, int testrailSuite, String junitResultsGlob, String testrailMilestone, boolean enableMilestone) {
         this.testrailProject = testrailProject;
         this.testrailSuite = testrailSuite;
         this.junitResultsGlob = junitResultsGlob;
@@ -63,10 +63,10 @@ public class TestRailNotifier extends Notifier {
         this.enableMilestone = enableMilestone;
     }
 
-    public void setTestrailProject(String project) { this.testrailProject = project;}
-    public String getTestrailProject() { return this.testrailProject; }
-    public void setTestrailSuite(String suite) { this.testrailSuite = suite; }
-    public String getTestrailSuite() { return this.testrailSuite; }
+    public void setTestrailProject(int project) { this.testrailProject = project;}
+    public int getTestrailProject() { return this.testrailProject; }
+    public void setTestrailSuite(int suite) { this.testrailSuite = suite; }
+    public int getTestrailSuite() { return this.testrailSuite; }
     public void setJunitResultsGlob(String glob) { this.junitResultsGlob = glob; }
     public String getJunitResultsGlob() { return this.junitResultsGlob; }
     public String getTestrailMilestone() { return this.testrailMilestone; }
@@ -126,14 +126,8 @@ public class TestRailNotifier extends Notifier {
 
         listener.getLogger().println("Uploading results to TestRail.");
         String runComment = "Automated results from Jenkins: " + BuildWrapper.all().jenkins.getRootUrl() + "/" + build.getUrl().toString();
-        String milestoneId = "null";
-        if (this.enableMilestone) {
-            try {
-                milestoneId = testrail.getMilestoneID(this.testrailMilestone, testCases.getProjectId());
-            } catch (ElementNotFoundException e) {
-                listener.getLogger().println(e.getMessage());
-            }
-        }
+        String milestoneId = testrailMilestone;
+
         int runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
         TestRailResponse response = testrail.addResultsForCases(runId, results);
         boolean buildResult = (200 == response.getStatus());
@@ -242,51 +236,52 @@ public class TestRailNotifier extends Notifier {
          * @return
          *      Indicates the outcome of the validation. This is sent to the browser.
          */
-        public FormValidation doCheckTestrailProject(@QueryParameter String value)
+        public FormValidation doCheckTestrailProject(@QueryParameter int value)
                 throws IOException, ServletException {
-            System.console().printf("into checkproject");
-            if (value.length() == 0) {
-                return FormValidation.error("Please set a project name.");
-            }
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
             if (getTestrailHost().isEmpty() || getTestrailUser().isEmpty() || getTestrailPassword().isEmpty() || !testrail.serverReachable() || !testrail.authenticationWorks()) {
                 return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
-            }
-            try {
-                int projectId = testrail.getProjectId(value);
-            } catch (ElementNotFoundException e) {
-                return FormValidation.error("Project " + value + " not found on TestRail server.");
             }
             return FormValidation.ok();
         }
-
-        public FormValidation doCheckTestrailSuite(@QueryParameter String value,
-                                                   @QueryParameter String testrailProject)
-                throws IOException, ServletException {
-            System.console().printf("into checksuite");
-            log("Testrail Project is ", testrailProject);
-            if (value.length() == 0) {
-                return FormValidation.error("Please set a suite name.");
+        public ListBoxModel doFillTestrailProjectItems() {
+            testrail.setHost(getTestrailHost());
+            testrail.setUser(getTestrailUser());
+            testrail.setPassword(getTestrailPassword());
+            ListBoxModel items = new ListBoxModel();
+            try {
+                for (Project prj : testrail.getProjects()) {
+                    items.add(prj.getName(), prj.getStringId());
+                }
+            } catch (ElementNotFoundException e) {
+            } catch (IOException e) {
             }
+            return items;
+        }
+
+        public ListBoxModel doFillTestrailSuiteItems(@QueryParameter int testrailProject) {
+            testrail.setHost(getTestrailHost());
+            testrail.setUser(getTestrailUser());
+            testrail.setPassword(getTestrailPassword());
+            ListBoxModel items = new ListBoxModel();
+            try {
+                for (Suite suite : testrail.getSuits(testrailProject)) {
+                    items.add(suite.getName(), suite.getStringId());
+                }
+            } catch (ElementNotFoundException e) {
+            } catch (IOException e) {
+            }
+            return items;
+        }
+        public FormValidation doCheckTestrailSuite(@QueryParameter String value)
+                throws IOException, ServletException {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
             if (getTestrailHost().isEmpty() || getTestrailUser().isEmpty() || getTestrailPassword().isEmpty() || !testrail.serverReachable() || !testrail.authenticationWorks()) {
                 return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
-            } else {
-                int projectId;
-                try {
-                    projectId = testrail.getProjectId(testrailProject);
-                } catch (ElementNotFoundException e) {
-                    return FormValidation.error("Project " + testrailProject + " not found on TestRail server.");
-                }
-                try {
-                    int suiteId = testrail.getSuiteId(projectId, value);
-                } catch (ElementNotFoundException e) {
-                    return FormValidation.error("Suite " + value + " not found on TestRail server.");
-                }
             }
             return FormValidation.ok();
         }
@@ -353,20 +348,18 @@ public class TestRailNotifier extends Notifier {
             return FormValidation.ok();
         }
 
-        public FormValidation doCheckTestrailMilestone(@QueryParameter String value, @QueryParameter String testrailProject)
-          throws IOException, ServletException {
-            log("Into checkmilestone");
-            log("Project name is ", testrailProject);
-            if (value.length() == 0) {
-                return  FormValidation.warning("Please set milestone name");
-            }
+
+
+        public ListBoxModel doFillTestrailMilestoneItems(@QueryParameter int testrailProject) {
+            ListBoxModel items = new ListBoxModel();
             try {
-                testrail.getMilestoneID(value, testrail.getProjectId(testrailProject));
-                return FormValidation.ok();
+                for (Milestone mstone : testrail.getMilestones(testrailProject)) {
+                    items.add(mstone.getName(), mstone.getId());
+                }
             } catch (ElementNotFoundException e) {
-                FormValidation.error("Wrong milestone");
+            } catch (IOException e) {
             }
-            return FormValidation.error("Milestone does not exist in the project.");
+            return items;
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
@@ -383,7 +376,6 @@ public class TestRailNotifier extends Notifier {
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-            System.console().printf("into configure");
             // To persist global configuration information,
             // set that to properties and call save().
             testrailHost = formData.getString("testrailHost");
