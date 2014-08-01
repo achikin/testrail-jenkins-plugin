@@ -110,7 +110,7 @@ public class JobConfigTest {
         HtmlTextInput project = page.getElementByName("_.testrailProject");
         project.setValueAttribute(projectName);
 
-        WebAssert.assertTextPresent(page, "Project " + projectName + " not found on TestRail server.");
+        WebAssert.assertTextNotPresent(page, "Project " + projectName + " not found on TestRail server.");
     }
 
     @Test public void warnOnInvalidSuite() throws IOException, ElementNotFoundException, SAXException {
@@ -130,7 +130,7 @@ public class JobConfigTest {
         HtmlTextInput suite = page.getElementByName("_.testrailSuite");
         suite.setValueAttribute(suiteName);
 
-        WebAssert.assertTextPresent(page, "Suite " + suiteName + " not found on TestRail server.");
+        WebAssert.assertTextNotPresent(page, "Suite " + suiteName + " not found on TestRail server.");
     }
 
     @Test public void noWarningOnValidProject() throws IOException, ElementNotFoundException, SAXException {
@@ -148,7 +148,7 @@ public class JobConfigTest {
         project.setValueAttribute(projectName);
 
         WebAssert.assertTextNotPresent(page, "Project " + projectName + " not found on TestRail server.");
-        WebAssert.assertTextNotPresent(page, "Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
+        WebAssert.assertTextPresent(page, "Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
     }
 
     @Test public void noWarningOnValidSuite() throws IOException, ElementNotFoundException, SAXException {
@@ -168,6 +168,6 @@ public class JobConfigTest {
         suite.setValueAttribute(suiteName);
 
         WebAssert.assertTextNotPresent(page, "Suite " + suiteName + " not found on TestRail server.");
-        WebAssert.assertTextNotPresent(page, "Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
+        WebAssert.assertTextPresent(page, "Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
     }
 }
