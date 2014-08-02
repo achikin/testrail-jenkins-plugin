@@ -352,6 +352,7 @@ public class TestRailNotifier extends Notifier {
 
         public ListBoxModel doFillTestrailMilestoneItems(@QueryParameter int testrailProject) {
             ListBoxModel items = new ListBoxModel();
+            items.add("None", "");
             try {
                 for (Milestone mstone : testrail.getMilestones(testrailProject)) {
                     items.add(mstone.getName(), mstone.getId());
