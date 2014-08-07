@@ -18,7 +18,6 @@
  */
 package testrail.testrail.TestRailObjects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by Drew on 3/24/2014.
@@ -36,7 +35,6 @@ public class Case {
         this.title = title;
     }
 
-    @JsonProperty("section_id")
     public void setSectionId(int sectionId) { this.sectionId = sectionId; }
 
     public int getId() {

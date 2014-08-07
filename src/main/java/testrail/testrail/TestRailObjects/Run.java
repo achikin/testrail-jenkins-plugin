@@ -18,16 +18,13 @@
  */
 package testrail.testrail.TestRailObjects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by Drew on 3/24/2014.
  */
 public class Run {
-    @JsonProperty("suite_id")
     private int suiteId;
     private int id;
-    @JsonProperty("description")
     private String description;
     private String milestone_id;
     public void setSuiteId(int suiteId) {

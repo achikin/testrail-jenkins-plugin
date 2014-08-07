@@ -18,18 +18,14 @@
  */
 package testrail.testrail.TestRailObjects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Created by Drew on 3/24/2014.
  */
 public class Section {
     private int id;
-    @JsonProperty("suite_id")
     private int suiteId;
     private String name;
-    @JsonProperty("parent_id")
-    private Integer parentId;
+    private String parentId;
 
     public void setId(int id) {
         this.id = id;
@@ -38,7 +34,7 @@ public class Section {
     public void setName(String name) {
         this.name = name;
     }
-    public void setParentId(Integer id) { this.parentId = id; }
+    public void setParentId(String id) { this.parentId = id; }
 
     public int getId() {
         return this.id;
@@ -47,5 +43,5 @@ public class Section {
     public String getName() {
         return this.name;
     }
-    public Integer getParentId() { return this.parentId; }
+    public String getParentId() { return this.parentId; }
 }

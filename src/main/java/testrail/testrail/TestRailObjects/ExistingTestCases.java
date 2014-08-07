@@ -35,7 +35,7 @@ public class ExistingTestCases {
     private String suite;
     private int suiteId;
     private List<Case> cases;
-    private List<Section> sections;;
+    private List<Section> sections;
 
     public ExistingTestCases(TestRailClient testRailClient, int projectId, int suite)
             throws IOException, ElementNotFoundException {
@@ -101,7 +101,7 @@ public class ExistingTestCases {
         throw new ElementNotFoundException(sectionName);
     }
 
-    public int addSection(String sectionName, Integer parentId) throws IOException, ElementNotFoundException {
+    public int addSection(String sectionName, String parentId) throws IOException, ElementNotFoundException {
         Section addedSection = testRailClient.addSection(sectionName, projectId, suiteId, parentId);
         sections.add(addedSection);
         return addedSection.getId();

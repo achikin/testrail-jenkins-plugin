@@ -18,9 +18,6 @@
  */
 package testrail.testrail;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -29,6 +26,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import testrail.testrail.TestRailObjects.*;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.xml.ws.http.HTTPException;
 import java.io.IOException;
@@ -42,7 +43,6 @@ public class TestRailClient {
     private String host;
     private String user;
     private String password;
-    private ObjectMapper objectMapper;
 
     public void setHost(String host) { this.host = host; }
     public void setUser(String user) { this.user = user; }
@@ -55,8 +55,6 @@ public class TestRailClient {
         this.host = host;
         this.user = user;
         this.password = password;
-        this.objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     private HttpClient setUpHttpClient(HttpMethod method) {
@@ -132,7 +130,15 @@ public class TestRailClient {
 
     public Project[] getProjects() throws IOException, ElementNotFoundException {
         String body = httpGet("/index.php?/api/v2/get_projects").getBody();
-        Project[] projects = this.objectMapper.readValue(body, Project[].class);
+        JSONArray json = new JSONArray(body);
+        Project[] projects = new Project[json.length()];
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject o = json.getJSONObject(i);
+            Project p = new Project();
+            p.setName(o.getString("name"));
+            p.setId(o.getInt("id"));
+            projects[i] = p;
+        }
         return projects;
     }
 
@@ -146,21 +152,25 @@ public class TestRailClient {
         throw new ElementNotFoundException(projectName);
     }
 
-    public int getSuiteId(int projectId, String suiteName) throws IOException, ElementNotFoundException {
-        Suite[] suites = getSuits(projectId);
-        for (int i = 0; i < suites.length; i++) {
-            if (suites[i].getName().equals(suiteName)) {
-                return suites[i].getId();
-            }
-        }
-        throw new ElementNotFoundException(suiteName);
-    }
-
     public Suite[] getSuits(int projectId) throws IOException, ElementNotFoundException {
         String body = httpGet("/index.php?/api/v2/get_suites/" + projectId).getBody();
-        Suite[] suites = this.objectMapper.readValue(body, Suite[].class);
+        JSONArray json;
+        try {
+            json = new JSONArray(body);
+        } catch (JSONException e) {
+            return new Suite[0];
+        }
+        Suite[] suites = new Suite[json.length()];
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject o = json.getJSONObject(i);
+            Suite s = new Suite();
+            s.setName(o.getString("name"));
+            s.setId(o.getInt("id"));
+            suites[i] = s;
+        }
         return suites;
     }
+
     public String getCasesString(int projectId, int suiteId) {
         String result = "index.php?/api/v2/get_cases/" + projectId + "&suite_id=" + suiteId;
         return result;
@@ -169,53 +179,102 @@ public class TestRailClient {
     public Case[] getCases(int projectId, int suiteId) throws IOException, ElementNotFoundException {
         // "/#{project_id}&suite_id=#{suite_id}#{section_string}"
         String body = httpGet("index.php?/api/v2/get_cases/" + projectId + "&suite_id=" + suiteId).getBody();
-        return this.objectMapper.readValue(body, Case[].class);
+        JSONArray json = new JSONArray(body);
+        Case[] cases = new Case[json.length()];
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject o = json.getJSONObject(i);
+            cases[i] = createCaseFromJson(o);
+        }
+        return cases;
     }
 
     public Section[] getSections(int projectId, int suiteId) throws IOException, ElementNotFoundException {
         String body = httpGet("index.php?/api/v2/get_sections/" + projectId + "&suite_id=" + suiteId).getBody();
-        return this.objectMapper.readValue(body, Section[].class);
+        JSONArray json = new JSONArray(body);
+        Section[] sects = new Section[json.length()];
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject o = json.getJSONObject(i);
+            sects[i] = createSectionFromJSON(o);
+        }
+        return sects;
+    }
+    private Section createSectionFromJSON(JSONObject o) {
+        Section s = new Section();
+        s.setName(o.getString("name"));
+        s.setId(o.getInt("id"));
+        if (!o.isNull("parent_id")) {
+            s.setParentId(String.valueOf(o.getInt("parent_id")));
+        } else {
+            s.setParentId("null");
+        }
+
+        s.setSuiteId(o.getInt("suite_id"));
+        return s;
     }
 
-    public Section addSection(String sectionName, int projectId, int suiteId, Integer parentId) throws IOException, ElementNotFoundException {
+    public Section addSection(String sectionName, int projectId, int suiteId, String parentId) throws IOException, ElementNotFoundException {
         Section section = new Section();
-        section.setName(sectionName);
-        section.setSuiteId(suiteId);
-        section.setParentId(parentId);
-        String payload = this.objectMapper.writeValueAsString(section);
+        String payload = new JSONObject().put("name", sectionName).put("suite_id", suiteId).put("parent_id", parentId).toString();
         String body = httpPost("index.php?/api/v2/add_section/" + projectId , payload).getBody();
-        return this.objectMapper.readValue(body, Section.class);
+        JSONObject o = new JSONObject(body);
+        return createSectionFromJSON(o);
     }
 
+    private Case createCaseFromJson(JSONObject o) {
+        Case s = new Case();
+        s.setTitle(o.getString("title"));
+        s.setId(o.getInt("id"));
+        s.setSectionId(o.getInt("section_id"));
+        return s;
+    }
     public Case addCase(String caseTitle, int sectionId) throws IOException {
         Case testcase = new Case();
         testcase.setTitle(caseTitle);
-        String payload = this.objectMapper.writeValueAsString(testcase);
+        String payload = new JSONObject().put("title", caseTitle).toString();
         String body = httpPost("index.php?/api/v2/add_case/" + sectionId, payload).getBody();
-        return this.objectMapper.readValue(body, Case.class);
+        Case c = createCaseFromJson(new JSONObject(body));
+        return c;
     }
 
     public TestRailResponse addResultsForCases(int runId, Results results) throws IOException {
-        String payload = this.objectMapper.writeValueAsString(results);
+        JSONArray a = new JSONArray();
+        for (int i = 0; i < results.getResults().size(); i++) {
+            JSONObject o = new JSONObject();
+            Result r = results.getResults().get(i);
+            o.put("case_id", r.getCsaeId()).put("status_id", r.getStatusId()).put("comment", r.getComment());
+            a.put(o);
+        }
+
+        String payload = new JSONObject().put("results", a).toString();
+        log(payload);
         TestRailResponse response = httpPost("index.php?/api/v2/add_results_for_cases/" + runId, payload);
         return response;
     }
 
     public int addRun(int projectId, int suiteId, String milestoneID, String description)
-            throws JsonProcessingException, UnsupportedEncodingException, IOException {
-        Run run = new Run();
-        run.setSuiteId(suiteId);
-        run.setDescription(description);
-        run.setMilestoneId(milestoneID);
-        String payload = this.objectMapper.writeValueAsString(run);
+            throws IOException {
+        String payload = new JSONObject().put("suite_id", suiteId).put("description", description).put("milestone_id", milestoneID).toString();
         String body = httpPost("index.php?/api/v2/add_run/" + projectId, payload).getBody();
-        Run result = this.objectMapper.readValue(body, Run.class);
-        return result.getId();
+        return new JSONObject(body).getInt("id");
     }
 
     public Milestone[] getMilestones(int projectId) throws IOException, ElementNotFoundException {
         String body = httpGet("index.php?/api/v2/get_milestones/" + projectId).getBody();
-        return this.objectMapper.readValue(body, Milestone[].class);
+        JSONArray json;
+        try {
+          json = new JSONArray(body);
+        } catch (JSONException e) {
+            return new Milestone[0];
+        }
+        Milestone[] suites = new Milestone[json.length()];
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject o = json.getJSONObject(i);
+            Milestone s = new Milestone();
+            s.setName(o.getString("name"));
+            s.setId(String.valueOf(o.getInt("id")));
+            suites[i] = s;
+        }
+        return suites;
     }
 
     public String getMilestoneID(String milesoneName, int projectId) throws IOException, ElementNotFoundException {
@@ -228,7 +287,7 @@ public class TestRailClient {
     }
 
     public boolean closeRun(int runId)
-            throws JsonProcessingException, UnsupportedEncodingException, IOException {
+            throws IOException {
         String payload = "";
         int status = httpPost("index.php?/api/v2/close_run/" + runId, payload).getStatus();
         return (200 == status);

@@ -18,8 +18,6 @@
  */
 package testrail.testrail.TestRailObjects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +28,6 @@ public class Results {
 
     private List<Result> results;
 
-    @JsonIgnore
     public Results() {
         this.results = new ArrayList<Result>();
     }

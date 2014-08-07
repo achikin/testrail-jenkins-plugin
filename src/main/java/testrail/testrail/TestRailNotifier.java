@@ -18,7 +18,6 @@
  */
 package testrail.testrail;
 
-import com.jcraft.jsch.Logger;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -143,9 +142,9 @@ public class TestRailNotifier extends Notifier {
         return buildResult;
     }
 
-    public Results addSuite(Testsuite suite, Integer parentId, ExistingTestCases existingCases) throws IOException {
+    public Results addSuite(Testsuite suite, String parentId, ExistingTestCases existingCases) throws IOException {
         //figure out TR sectionID
-        Integer sectionId;
+        int sectionId;
         try {
             sectionId = existingCases.getSectionId(suite.getName());
         } catch (ElementNotFoundException e1) {
@@ -161,7 +160,7 @@ public class TestRailNotifier extends Notifier {
         Results results = new Results();
         if (suite.hasSuits()) {
             for (Testsuite subsuite : suite.getSuits()) {
-                results.merge(addSuite(subsuite, sectionId, existingCases));
+                results.merge(addSuite(subsuite, String.valueOf(sectionId), existingCases));
             }
         }
         if (suite.hasCases()) {
@@ -266,6 +265,7 @@ public class TestRailNotifier extends Notifier {
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
             ListBoxModel items = new ListBoxModel();
+
             try {
                 for (Suite suite : testrail.getSuits(testrailProject)) {
                     items.add(suite.getName(), suite.getStringId());

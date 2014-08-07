@@ -22,24 +22,24 @@ package testrail.testrail.TestRailObjects;
  * Created by Drew on 3/24/2014.
  */
 public class Project {
-    private int id;
-    private String name;
+    private int _id;
+    private String _name;
 
     public void setId(int id) {
-        this.id = id;
+        _id = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+        _name = name;
     }
 
     public int getId() {
-        return this.id;
+        return _id;
     }
 
     public String getName() {
-        return this.name;
+        return _name;
     }
 
-    public String getStringId() { return Integer.toString(id); }
+    public String getStringId() { return Integer.toString(_id); }
 }
