@@ -35,7 +35,7 @@ public class Testsuite {
     private List<Testcase> cases;
     private List<Testsuite> suits;
     @XmlAttribute
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) { this.name = name.trim(); }
     @XmlAttribute
     public void setFailures(int failures) { this.failures = failures; }
     @XmlAttribute
