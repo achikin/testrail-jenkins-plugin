@@ -32,7 +32,7 @@ public class Section {
     }
     public void  setSuiteId(int suiteId) { this.suiteId = suiteId; }
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
     public void setParentId(String id) { this.parentId = id; }
 

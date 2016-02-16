@@ -29,7 +29,7 @@ public class Testcase {
     private Failure failure;
 
     @XmlAttribute
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) { this.name = name.trim(); }
     @XmlElement(name = "failure")
     public void setFailure(Failure failure) { this.failure = failure; }
 

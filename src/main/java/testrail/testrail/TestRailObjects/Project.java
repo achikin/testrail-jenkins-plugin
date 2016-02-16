@@ -30,7 +30,7 @@ public class Project {
     }
 
     public void setName(String name) {
-        _name = name;
+        _name = name.trim();
     }
 
     public int getId() {

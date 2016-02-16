@@ -32,7 +32,7 @@ public class Case {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title.trim();
     }
 
     public void setSectionId(int sectionId) { this.sectionId = sectionId; }
