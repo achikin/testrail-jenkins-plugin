@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import javax.xml.ws.http.HTTPException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.InterruptedException;
 import java.util.List;
 import static testrail.testrail.Utils.*;
 /**
@@ -70,6 +71,23 @@ public class TestRailClient {
     }
 
     private TestRailResponse httpGet(String path) throws IOException {
+        TestRailResponse response;
+
+        do {
+            response = httpGetInt(path);
+            if (response.getStatus() == 429) {
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    log(e.toString());
+                }
+            }
+       } while (response.getStatus() == 429);
+
+       return response;
+    }
+
+    private TestRailResponse httpGetInt(String path) throws IOException {
         TestRailResponse result;
         GetMethod get = new GetMethod(host + "/" + path);
         HttpClient httpclient = setUpHttpClient(get);
@@ -86,6 +104,24 @@ public class TestRailClient {
     }
 
     private TestRailResponse httpPost(String path, String payload)
+        throws UnsupportedEncodingException, IOException, HTTPException {
+        TestRailResponse response;
+
+        do {
+            response = httpPostInt(path, payload);
+            if (response.getStatus() == 429) {
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    log(e.toString());
+                }
+            }
+        } while (response.getStatus() == 429);
+
+        return response;
+    }
+
+    private TestRailResponse httpPostInt(String path, String payload)
             throws UnsupportedEncodingException, IOException, HTTPException {
         TestRailResponse result;
         PostMethod post = new PostMethod(host + "/" + path);

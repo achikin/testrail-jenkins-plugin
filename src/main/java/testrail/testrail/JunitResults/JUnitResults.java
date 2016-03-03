@@ -49,30 +49,37 @@ public class JUnitResults {
 
     public void slurpTestResults(String fileMatchers) throws IOException, JAXBException, InterruptedException {
         Suites = new ArrayList<Testsuite>();
-        JAXBContext jaxbContext = JAXBContext.newInstance(Testsuites.class);
-        final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        JAXBContext jaxbSuiteContext = JAXBContext.newInstance(Testsuite.class);
+        JAXBContext jaxbSuitesContext = JAXBContext.newInstance(Testsuites.class);
+        final Unmarshaller jaxbSuiteUnmarshaller = jaxbSuiteContext.createUnmarshaller();
+        final Unmarshaller jaxbSuitesUnmarshaller = jaxbSuitesContext.createUnmarshaller();
 
         final DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
         logger.println("Scanning " + baseDir);
 
         baseDir.act(new FilePath.FileCallable<Void>() {
             public Void invoke(File f, VirtualChannel channel) throws IOException {
-                Testsuite suite = null;
                 logger.println("processing " + f.getName());
                 scanner.scan(f, new FileVisitor() {
                     @Override
                     public void visit(File file, String s) throws IOException {
-                        Testsuites suites = null;
                         logger.println("processing " + file.getName());
                         try {
-                            suites = (Testsuites) jaxbUnmarshaller.unmarshal(file);
-                        } catch (JAXBException e) {
-                            e.printStackTrace();
-                        }
-                        if (suites.hasSuites()) {
-                            for (Testsuite suite : suites.getSuites()) {
-                                Suites.add(suite);
+                            Testsuites suites = (Testsuites) jaxbSuitesUnmarshaller.unmarshal(file);
+                            if (suites.hasSuites()) {
+                                for (Testsuite suite : suites.getSuites()) {
+                                    Suites.add(suite);
+                                }
                             }
+                        } catch (ClassCastException e) {
+                            try {
+                                Testsuite suite = (Testsuite) jaxbSuiteUnmarshaller.unmarshal(file);
+                                Suites.add(suite);
+                           } catch (JAXBException ex) {
+                               ex.printStackTrace();
+                           }
+                        } catch (JAXBException exc) {
+                            exc.printStackTrace();
                         }
                     }
                 });
