@@ -33,10 +33,10 @@ public class Testcase {
     public void setName(String name) { this.name = name.trim(); }
     @XmlElement(name = "failure")
     public void setFailure(Failure failure) { this.failure = failure; }
-    @XmlAttribute
-    public void setElapsed(float time) { this.time = time; }
+    @XmlAttribute(name = "time")
+    public void setTime(float time) { this.time = time; }
 
     public String getName() { return this.name; }
     public Failure getFailure() { return this.failure; }
-    public float getElapsed() { return this.time; }
+    public float getTime() { return this.time; }
 }

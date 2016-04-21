@@ -277,7 +277,7 @@ public class TestRailClient {
         for (int i = 0; i < results.getResults().size(); i++) {
             JSONObject o = new JSONObject();
             Result r = results.getResults().get(i);
-            o.put("case_id", r.getCaseId()).put("status_id", r.getStatusId()).put("comment", r.getComment());
+            o.put("case_id", r.getCaseId()).put("status_id", r.getStatusId()).put("comment", r.getComment()).put("elapsed", r.getElapsed());
             a.put(o);
         }
 
