@@ -27,12 +27,16 @@ import javax.xml.bind.annotation.XmlElement;
 public class Testcase {
     private String name;
     private Failure failure;
+    private float time;
 
     @XmlAttribute
     public void setName(String name) { this.name = name.trim(); }
     @XmlElement(name = "failure")
     public void setFailure(Failure failure) { this.failure = failure; }
+    @XmlAttribute
+    public void setElapsed(float time) { this.time = time; }
 
     public String getName() { return this.name; }
     public Failure getFailure() { return this.failure; }
+    public float getElapsed() { return this.time; }
 }
