@@ -172,7 +172,7 @@ public class TestRailNotifier extends Notifier {
                     caseId = existingCases.addCase(testcase.getName(), sectionId);
                 }
                 int caseStatus;
-                float caseTime = testcase.getTime();
+                Float caseTime = testcase.getTime();
                 String caseComment = null;
                 Failure caseFailure = testcase.getFailure();
                 if (caseFailure != null) {

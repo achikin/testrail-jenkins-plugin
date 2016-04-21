@@ -24,10 +24,10 @@ package testrail.testrail.TestRailObjects;
 public class Result {
     private int caseId;
     private int statusId;
-    private float elapsed;
+    private Float elapsed;
     private String comment;
 
-    public Result(int caseId, int statusId, String comment, float elapsed) {
+    public Result(int caseId, int statusId, String comment, Float elapsed) {
         this.caseId = caseId;
         this.statusId = statusId;
         this.comment = comment;
@@ -41,6 +41,17 @@ public class Result {
 
     public int getCaseId() { return this.caseId; }
     public int getStatusId() { return this.statusId; }
-    public float getElapsed() { return this.elapsed; }
+    public Float getElapsed() { return this.elapsed; }
     public String getComment() { return this.comment; }
+
+    public String getElapsedTimeString() {
+        Float temp = elapsed;
+        int h = temp.intValue()/360;
+        temp = temp - (h * 360);
+        int m = temp.intValue()/60;
+        temp = temp - (m * 60);
+        int s = temp.intValue();
+
+        return h + "h" + m + "m" + s + "s";
+    }
 }
