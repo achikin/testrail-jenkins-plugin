@@ -27,7 +27,7 @@ public class Result {
     private float elapsed;
     private String comment;
 
-    public Result(int caseId, int statusId, float elapsed, String comment,) {
+    public Result(int caseId, int statusId, float elapsed, String comment) {
         this.caseId = caseId;
         this.statusId = statusId;
         this.comment = comment;
