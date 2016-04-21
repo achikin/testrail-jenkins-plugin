@@ -24,19 +24,23 @@ package testrail.testrail.TestRailObjects;
 public class Result {
     private int caseId;
     private int statusId;
+    private int elapsed;
     private String comment;
 
-    public Result(int caseId, int statusId, String comment) {
+    public Result(int caseId, int statusId, int elapsed, String comment,) {
         this.caseId = caseId;
         this.statusId = statusId;
         this.comment = comment;
+        this.elapsed = elapsed;
     }
 
     public void setCaseId(int caseId) { this.caseId = caseId; }
     public void setStatusId(int statusId) { this.statusId = statusId; }
+    public void setElapsed(int timeInSeconds) { this.elapsed = timeInSeconds; }
     public void setComment(String comment) { this.comment = comment; }
 
-    public int getCsaeId() { return this.caseId; }
+    public int getCaseId() { return this.caseId; }
     public int getStatusId() { return this.statusId; }
+    public int getElapsed() { return this.elapsed; }
     public String getComment() { return this.comment; }
 }
