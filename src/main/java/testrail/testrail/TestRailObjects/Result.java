@@ -45,13 +45,6 @@ public class Result {
     public String getComment() { return this.comment; }
 
     public String getElapsedTimeString() {
-        Float temp = elapsed;
-        int h = temp.intValue()/360;
-        temp = temp - (h * 360);
-        int m = temp.intValue()/60;
-        temp = temp - (m * 60);
-        int s = temp.intValue();
-
-        return h + "h" + m + "m" + s + "s";
+        return elapsed.intValue() + "s";
     }
 }
