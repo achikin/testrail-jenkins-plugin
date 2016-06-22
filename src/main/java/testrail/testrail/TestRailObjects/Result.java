@@ -45,6 +45,6 @@ public class Result {
     public String getComment() { return this.comment; }
 
     public String getElapsedTimeString() {
-        return elapsed.intValue() + "s";
+        return Math.max(1, elapsed.intValue()) + "s";
     }
 }
