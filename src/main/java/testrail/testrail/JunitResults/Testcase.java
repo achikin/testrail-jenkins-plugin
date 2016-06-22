@@ -28,6 +28,7 @@ public class Testcase {
     private String name;
     private Failure failure;
     private Float time;
+    private String refs;
 
     @XmlAttribute
     public void setName(String name) { this.name = name.trim(); }
@@ -35,8 +36,11 @@ public class Testcase {
     public void setFailure(Failure failure) { this.failure = failure; }
     @XmlAttribute(name = "time")
     public void setTime(Float time) { this.time = time; }
+    @XmlAttribute(name = "refs")
+    public void setRefs(String refs) { this.refs = refs; }
 
     public String getName() { return this.name; }
     public Failure getFailure() { return this.failure; }
     public Float getTime() { return this.time; }
+    public String getRefs() { return this.refs; }
 }

@@ -25,8 +25,11 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+
+import testrail.testrail.JunitResults.Testcase;
 import testrail.testrail.TestRailObjects.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -263,11 +266,14 @@ public class TestRailClient {
         s.setSectionId(o.getInt("section_id"));
         return s;
     }
-    public Case addCase(String caseTitle, int sectionId) throws IOException {
-        Case testcase = new Case();
-        testcase.setTitle(caseTitle);
-        String payload = new JSONObject().put("title", caseTitle).toString();
-        String body = httpPost("index.php?/api/v2/add_case/" + sectionId, payload).getBody();
+
+    public Case addCase(Testcase caseToAdd, int sectionId) throws IOException {
+        JSONObject payload = new JSONObject().put("title", caseToAdd.getName());
+        if (!StringUtils.isEmpty(caseToAdd.getRefs())) {
+            payload.put("refs", caseToAdd.getRefs());
+        }
+
+        String body = httpPost("index.php?/api/v2/add_case/" + sectionId, payload.toString()).getBody();
         Case c = createCaseFromJson(new JSONObject(body));
         return c;
     }
