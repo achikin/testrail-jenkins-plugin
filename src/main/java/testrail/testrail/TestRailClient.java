@@ -264,6 +264,7 @@ public class TestRailClient {
         s.setTitle(o.getString("title"));
         s.setId(o.getInt("id"));
         s.setSectionId(o.getInt("section_id"));
+        s.setRefs(o.optString("refs"));
         return s;
     }
 
