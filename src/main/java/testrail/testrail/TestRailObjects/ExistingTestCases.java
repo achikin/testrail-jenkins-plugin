@@ -18,6 +18,7 @@
  */
 package testrail.testrail.TestRailObjects;
 
+import testrail.testrail.JunitResults.Testcase;
 import testrail.testrail.TestRailClient;
 
 import java.io.IOException;
@@ -107,8 +108,8 @@ public class ExistingTestCases {
         return addedSection.getId();
     }
 
-    public int addCase(String caseName, int sectionId) throws IOException {
-        Case addedCase = testRailClient.addCase(caseName, sectionId);
+    public int addCase(Testcase caseToAdd, int sectionId) throws IOException {
+        Case addedCase = testRailClient.addCase(caseToAdd, sectionId);
         cases.add(addedCase);
         return addedCase.getId();
     }

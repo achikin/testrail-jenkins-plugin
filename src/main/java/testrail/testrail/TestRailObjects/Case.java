@@ -26,6 +26,7 @@ public class Case {
     private int id;
     private String title;
     private int sectionId;
+    private String refs;
 
     public void setId(int id) {
         this.id = id;
@@ -37,6 +38,10 @@ public class Case {
 
     public void setSectionId(int sectionId) { this.sectionId = sectionId; }
 
+    public void setRefs(String refs) {
+        this.refs = refs;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -46,4 +51,8 @@ public class Case {
     }
 
     public int getSectionId() { return this.sectionId; }
+
+    public String getRefs() {
+        return this.refs;
+    }
 }

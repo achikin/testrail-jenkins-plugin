@@ -169,7 +169,7 @@ public class TestRailNotifier extends Notifier {
                 try {
                     caseId = existingCases.getCaseId(suite.getName(), testcase.getName());
                 } catch (ElementNotFoundException e) {
-                    caseId = existingCases.addCase(testcase.getName(), sectionId);
+                    caseId = existingCases.addCase(testcase, sectionId);
                 }
                 int caseStatus;
                 Float caseTime = testcase.getTime();
