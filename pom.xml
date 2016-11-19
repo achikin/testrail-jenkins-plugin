@@ -7,8 +7,9 @@
   </parent>
 
   <groupId>testrail</groupId>
-  <artifactId>testrail</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>testrail-notifier</artifactId>
+  <name>TestRail Notifier</name>
+  <version>1.0</version>
   <packaging>hpi</packaging>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
