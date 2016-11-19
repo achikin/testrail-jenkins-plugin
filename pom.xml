@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.570</version><!-- which version of Jenkins is this plugin built against? -->
+    <version>1.656</version><!-- which version of Jenkins is this plugin built against? -->
   </parent>
 
   <groupId>testrail</groupId>
   <artifactId>testrail-notifier</artifactId>
   <name>TestRail Notifier</name>
-  <version>1.0</version>
+  <version>1.0.0</version>
   <packaging>hpi</packaging>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
