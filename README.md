@@ -15,7 +15,7 @@ Using the Plugin
 2. Once you install the plugin, you must configure the TestRail user in your Global Settings. 
 ![Global Settings for the TestRail Notifier](global-settings.PNG)
 
-3. Go to the job you wish to use the plugin with and add a Post Build Acion. The option you want is Test Rail Notifier.
+3. Go to the job you wish to use the plugin with and add a Post Build Acion. The option you want is Notify TestRail.
 
 4. Configure the step. The Project and Test Suite dropdowns are automatically populated using the TestRail API.
 Note you can also optionally define a Milestone that you are testing against. 
