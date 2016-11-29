@@ -57,7 +57,7 @@ public class JUnitResults {
         final DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
         logger.println("Scanning " + baseDir);
 
-        baseDir.act(new FilePath.FileCallable<Void>() {
+        baseDir.act(new MasterToSlaveFileCallable<Void>() {
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 logger.println("processing " + f.getName());
                 scanner.scan(f, new FileVisitor() {

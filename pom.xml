@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.570</version><!-- which version of Jenkins is this plugin built against? -->
+    <version>2.6</version>
   </parent>
 
   <groupId>testrail</groupId>
-  <artifactId>testrail-notifier</artifactId>
-  <name>TestRail Notifier</name>
+  <artifactId>testrail</artifactId>
+  <name>TestRail Plugin</name>
   <version>1.0.0</version>
   <licenses>
     <license>
@@ -58,7 +58,7 @@
       <dependency>
           <groupId>org.jenkins-ci.main</groupId>
           <artifactId>jenkins-test-harness</artifactId>
-          <version>1.509.4</version>
+          <version>1.551</version>
       </dependency>
       <dependency>
           <groupId>org.jacoco</groupId>
@@ -82,8 +82,9 @@
   </distributionManagement>
 
   <properties>
+    <jenkins.version>1.651.3</jenkins.version>
     <!-- define all plugin versions -->
-    <maven.version>3.0.1</maven.version>
+    <maven.version>3.0.2</maven.version>
     <maven-antrun-plugin.version>1.6</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.2</maven-assembly-plugin.version>
     <maven-changelog-plugin.version>2.2</maven-changelog-plugin.version>
@@ -105,7 +106,7 @@
     <maven-project-info-reports-plugin.version>2.3.1</maven-project-info-reports-plugin.version>
     <maven-plugin-plugin.version>2.4.3</maven-plugin-plugin.version>
     <maven-reactor-plugin.version>1.0</maven-reactor-plugin.version>
-    <maven-release-plugin.version>2.1</maven-release-plugin.version>
+    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     <maven-remote-resources-plugin.version>1.1</maven-remote-resources-plugin.version>
     <maven-resources-plugin.version>2.4.3</maven-resources-plugin.version>
     <maven-site-plugin.version>2.1.1</maven-site-plugin.version>
