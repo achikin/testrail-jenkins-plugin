@@ -32,6 +32,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import jenkins.MasterToSlaveFileCallable;
+
 /**
  * Created by Drew on 3/24/2014.
  */
