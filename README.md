@@ -7,6 +7,13 @@ Upload your junit test results to TestRail after every run.
 Each Jenkins build becomes test run.
 Each testsuite becomes test group.
 
+Important notice!
+-----------------
+This plugin is now maintained by Jenkins community   here https://github.com/jenkinsci/testrail-plugin 
+
+Please **do not use the code from this repo**. 
+
+If you have any questions, bugreports or pull requests please refer to the link above.
 
 This fork changelog
 ---------------
