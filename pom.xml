@@ -6,6 +6,8 @@
     <version>2.6</version>
   </parent>
 
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/TestRail+Plugin</url>
+  
   <groupId>testrail</groupId>
   <artifactId>testrail</artifactId>
   <name>TestRail Plugin</name>
