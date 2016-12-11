@@ -28,6 +28,14 @@
     <url>https://github.com/jenkinsci/testrail-plugin</url>
   </scm>
 
+  <developers>
+    <developer>
+      <id>xirsoi</id>
+      <name>Adam Chevalier</name>
+      <email>chevalierAdam2@gmail.com</email>
+    </developer>
+  </developers>
+  
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
     <repository>
