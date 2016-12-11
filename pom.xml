@@ -7,7 +7,7 @@
   </parent>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/TestRail+Plugin</url>
-  
+
   <groupId>testrail</groupId>
   <artifactId>testrail</artifactId>
   <name>TestRail Plugin</name>
@@ -21,6 +21,12 @@
     </license>
   </licenses>
   <packaging>hpi</packaging>
+
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/testrail-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/testrail-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/testrail-plugin</url>
+  </scm>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
@@ -70,13 +76,6 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
-
-  <distributionManagement>
-    <site>
-      <id>https://github.com/simplymeasured/testrail-jenkins-plugin</id>
-      <url>gitsite:git@github.com/jenkinsci/testrail-jenkins-plugin</url>
-    </site>
-  </distributionManagement>
 
   <properties>
     <jenkins.version>1.651.3</jenkins.version>
