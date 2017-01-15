@@ -11,7 +11,7 @@
   <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>testrail</artifactId>
   <name>TestRail Plugin</name>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -26,7 +26,7 @@
     <connection>scm:git:ssh://github.com/jenkinsci/testrail-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/testrail-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/testrail-plugin</url>
-    <tag>testrail-1.0.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
