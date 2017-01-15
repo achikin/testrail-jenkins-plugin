@@ -252,7 +252,7 @@ public class TestRailClient {
     }
 
     public Section addSection(String sectionName, int projectId, int suiteId, String parentId) throws IOException, ElementNotFoundException {
-        Section section = new Section();
+        //Section section = new Section();
         String payload = new JSONObject().put("name", sectionName).put("suite_id", suiteId).put("parent_id", parentId).toString();
         String body = httpPost("index.php?/api/v2/add_section/" + projectId , payload).getBody();
         JSONObject o = new JSONObject(body);

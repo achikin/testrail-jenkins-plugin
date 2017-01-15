@@ -40,7 +40,7 @@ import jenkins.MasterToSlaveFileCallable;
 public class JUnitResults {
     private FilePath baseDir;
     private PrintStream logger;
-    private String[] Files;
+    //private String[] Files;
     private List<Testsuite> Suites;
 
     public JUnitResults(FilePath baseDir, String fileMatchers, PrintStream logger) throws IOException, JAXBException, InterruptedException {
@@ -94,5 +94,5 @@ public class JUnitResults {
         return this.Suites;
     }
 
-    public String[] getFiles() { return this.Files; }
+    //public String[] getFiles() { return this.Files.clone(); }
 }

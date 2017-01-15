@@ -33,7 +33,7 @@ import java.util.List;
 public class ExistingTestCases {
     private TestRailClient testRailClient;
     private int projectId;
-    private String suite;
+    //private String suite;
     private int suiteId;
     private List<Case> cases;
     private List<Section> sections;

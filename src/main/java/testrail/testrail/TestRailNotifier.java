@@ -92,6 +92,10 @@ public class TestRailNotifier extends Notifier {
         String[] caseNames = null;
         try {
             caseNames = testCases.listTestCases();
+            listener.getLogger().println("Test Cases: ");
+            for (int i = 0; i < caseNames.length; i++) {
+                listener.getLogger().println("  " + caseNames[i]);
+            }
         } catch (ElementNotFoundException e) {
             listener.getLogger().println("Failed to list test cases");
             listener.getLogger().println("Element not found:" + e.getMessage());
@@ -110,13 +114,19 @@ public class TestRailNotifier extends Notifier {
         // it looks like the destructor deletes the temp dir when we're finished
         FilePath tempdir = new FilePath(Util.createTempDir());
         // This picks up *all* result files so if you have old results in the same directory we'll see those, too.
-        build.getWorkspace().copyRecursiveTo(junitResultsGlob, "", tempdir);
-
+        FilePath ws = build.getWorkspace();
+        try {
+            ws.copyRecursiveTo(junitResultsGlob, "", tempdir);
+        } catch (Exception e) {
+            listener.getLogger().println("Error trying to copy files to Jenkins master: " + e.getMessage());
+            return false;
+        }
         JUnitResults actualJunitResults = null;
         try {
             actualJunitResults = new JUnitResults(tempdir, this.junitResultsGlob, listener.getLogger());
         } catch (JAXBException e) {
             listener.getLogger().println(e.getMessage());
+            return false;
         }
         List<Testsuite> suites = actualJunitResults.getSuites();
         for (Testsuite suite: suites) {
@@ -124,7 +134,7 @@ public class TestRailNotifier extends Notifier {
         }
 
         listener.getLogger().println("Uploading results to TestRail.");
-        String runComment = "Automated results from Jenkins: " + BuildWrapper.all().jenkins.getRootUrl() + "/" + build.getUrl().toString();
+        String runComment = "Automated results from Jenkins: " + build.getUrl().toString();
         String milestoneId = testrailMilestone;
 
         int runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
