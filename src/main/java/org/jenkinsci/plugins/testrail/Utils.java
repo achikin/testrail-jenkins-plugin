@@ -1,4 +1,4 @@
-package testrail.testrail;
+package org.jenkinsci.plugins.testrail;
 
 import java.util.Arrays;
 import java.util.logging.Level;

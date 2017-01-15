@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
 /**
  * Created by Drew on 3/25/2014.

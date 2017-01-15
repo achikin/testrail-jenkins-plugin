@@ -16,24 +16,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.JunitResults;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
- * Created by Drew on 3/25/2014.
+ * Created by Drew on 3/26/2014.
  */
-public class Results {
+public class Failure {
+    private String type;
+    private String message;
+    private String text;
 
-    private List<Result> results;
+    @XmlAttribute
+    public void setType(String type) { this.type = type; }
+    @XmlAttribute
+    public void  setMessage(String message) { this.message = message; }
+    @XmlValue
+    public void setText(String text) { this.text = text; }
 
-    public Results() {
-        this.results = new ArrayList<Result>();
-    }
-
-    public void setResults(ArrayList<Result> results) { this.results = results; }
-    public void addResult(Result result) { this.results.add(result); }
-    public List<Result> getResults() {return this.results; }
-    public void merge(Results other) { this.results.addAll(other.getResults()); }
+    public String getType() { return this.type; }
+    public String getMessage() { return this.message; }
+    public String getText() { return this.text; }
 }

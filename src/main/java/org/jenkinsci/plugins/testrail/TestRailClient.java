@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail;
+package org.jenkinsci.plugins.testrail;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -26,8 +26,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
-import testrail.testrail.JunitResults.Testcase;
-import testrail.testrail.TestRailObjects.*;
+import org.jenkinsci.plugins.testrail.JunitResults.Testcase;
+import org.jenkinsci.plugins.testrail.TestRailObjects.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.InterruptedException;
 import java.util.List;
-import static testrail.testrail.Utils.*;
+import static org.jenkinsci.plugins.testrail.Utils.*;
 /**
  * Created by Drew on 3/19/14.
  */

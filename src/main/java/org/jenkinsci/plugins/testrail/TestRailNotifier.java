@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail;
+package org.jenkinsci.plugins.testrail;
 
 import hudson.Extension;
 import hudson.FilePath;
@@ -32,18 +32,18 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import testrail.testrail.JunitResults.Failure;
-import testrail.testrail.JunitResults.JUnitResults;
-import testrail.testrail.JunitResults.Testcase;
-import testrail.testrail.JunitResults.Testsuite;
-import testrail.testrail.TestRailObjects.*;
+import org.jenkinsci.plugins.testrail.JunitResults.Failure;
+import org.jenkinsci.plugins.testrail.JunitResults.JUnitResults;
+import org.jenkinsci.plugins.testrail.JunitResults.Testcase;
+import org.jenkinsci.plugins.testrail.JunitResults.Testsuite;
+import org.jenkinsci.plugins.testrail.TestRailObjects.*;
 
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import static testrail.testrail.Utils.*;
+import static org.jenkinsci.plugins.testrail.Utils.*;
 
 public class TestRailNotifier extends Notifier {
 

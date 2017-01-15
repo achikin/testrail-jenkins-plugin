@@ -16,43 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Drew on 3/24/2014.
+ * Created by Drew on 3/25/2014.
  */
-public class Case {
-    private int id;
-    private String title;
-    private int sectionId;
-    private String refs;
+public class Results {
 
-    public void setId(int id) {
-        this.id = id;
+    private List<Result> results;
+
+    public Results() {
+        this.results = new ArrayList<Result>();
     }
 
-    public void setTitle(String title) {
-        this.title = title.trim();
-    }
-
-    public void setSectionId(int sectionId) { this.sectionId = sectionId; }
-
-    public void setRefs(String refs) {
-        this.refs = refs;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public int getSectionId() { return this.sectionId; }
-
-    public String getRefs() {
-        return this.refs;
-    }
+    public void setResults(ArrayList<Result> results) { this.results = results; }
+    public void addResult(Result result) { this.results.add(result); }
+    public List<Result> getResults() {return this.results; }
+    public void merge(Results other) { this.results.addAll(other.getResults()); }
 }

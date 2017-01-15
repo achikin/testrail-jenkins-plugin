@@ -16,30 +16,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
+
 
 /**
  * Created by Drew on 3/24/2014.
  */
-public class Project {
-    private int _id;
-    private String _name;
-
-    public void setId(int id) {
-        _id = id;
+public class Run {
+    private int suiteId;
+    private int id;
+    private String description;
+    private String milestone_id;
+    public void setSuiteId(int suiteId) {
+        this.suiteId = suiteId;
     }
-
-    public void setName(String name) {
-        _name = name.trim();
+    public void setId(int id) { this.id = id; }
+    public void setDescription(String description) { this.description = description; }
+    public int getSuiteId() {
+        return this.suiteId;
     }
-
     public int getId() {
-        return _id;
+        return this.id;
     }
-
-    public String getName() {
-        return _name;
-    }
-
-    public String getStringId() { return Integer.toString(_id); }
+    public String getDescription() { return this.description; }
+    public void setMilestoneId(String mid) { this.milestone_id = mid; }
+    public String getMilestoneId() {return this.milestone_id; }
 }

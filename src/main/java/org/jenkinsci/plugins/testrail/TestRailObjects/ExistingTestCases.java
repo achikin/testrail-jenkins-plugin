@@ -16,10 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
-import testrail.testrail.JunitResults.Testcase;
-import testrail.testrail.TestRailClient;
+import org.jenkinsci.plugins.testrail.JunitResults.Testcase;
+import org.jenkinsci.plugins.testrail.TestRailClient;
 
 import java.io.IOException;
 import java.util.ArrayList;

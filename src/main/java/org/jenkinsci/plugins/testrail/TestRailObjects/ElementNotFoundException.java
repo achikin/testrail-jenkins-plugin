@@ -16,20 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
 /**
- * Created by Drew on 3/20/14.
+ * Created by Drew on 3/24/2014.
  */
-public class TestRailResponse {
-    private Integer status;
-    public Integer getStatus() { return status; }
-    
-    private String body;
-    public String getBody() { return body; }
-
-    public TestRailResponse(Integer status, String body) {
-        this.status = status;
-        this.body = body;
+public class ElementNotFoundException extends Exception {
+    public ElementNotFoundException(String message) {
+        super(message);
     }
 }
