@@ -8,7 +8,7 @@
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/TestRail+Plugin</url>
 
-  <groupId>testrail</groupId>
+  <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>testrail</artifactId>
   <name>TestRail Plugin</name>
   <version>1.0.2-SNAPSHOT</version>

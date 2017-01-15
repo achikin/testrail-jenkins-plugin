@@ -208,23 +208,8 @@ public class TestRailNotifier extends Notifier {
         return BuildStepMonitor.NONE; //null;
     }
 
-    /**
-     * Descriptor for {@link TestRailNotifier}. Used as a singleton.
-     * The class is marked as public so that it can be accessed from views.
-     *
-     * <p>
-     * See <tt>src/main/resources/hudson/plugins/hello_world/TestRailRecorder/*.jelly</tt>
-     * for the actual HTML fragment for the configuration screen.
-     */
-    @Extension // This indicates to Jenkins that this is an implementation of an extension point.
+    @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-        /**
-         * To persist global configuration information,
-         * simply store it in a field and call save().
-         *
-         * <p>
-         * If you don't want fields to be persisted, use <tt>transient</tt>.
-         */
         private String testrailHost = "";
         private String testrailUser = "";
         private String testrailPassword = "";
@@ -238,14 +223,6 @@ public class TestRailNotifier extends Notifier {
             load();
         }
 
-        /**
-         * Performs on-the-fly validation of the form field 'name'.
-         *
-         * @param value
-         *      This parameter receives the value that the user has typed.
-         * @return
-         *      Indicates the outcome of the validation. This is sent to the browser.
-         */
         public FormValidation doCheckTestrailProject(@QueryParameter int value)
                 throws IOException, ServletException {
             testrail.setHost(getTestrailHost());
@@ -401,12 +378,6 @@ public class TestRailNotifier extends Notifier {
             return super.configure(req,formData);
         }
 
-        /**
-         * This method returns true if the global configuration says we should speak French.
-         *
-         * The method name is bit awkward because global.jelly calls this method to determine
-         * the initial state of the checkbox by the naming convention.
-         */
         public void setTestrailHost(String host) { this.testrailHost = host; }
         public String getTestrailHost() { return testrailHost; }
         public void setTestrailUser(String user) { this.testrailUser = user; }
