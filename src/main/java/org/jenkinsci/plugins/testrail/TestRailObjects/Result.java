@@ -45,13 +45,7 @@ public class Result {
     public String getComment() { return this.comment; }
 
     public String getElapsedTimeString() {
-        int time;
-
-        if (elapsed == null) {
-            time = 1;
-        } else {
-            time = elapsed.intValue();
-        }
+        int time = (elapsed == null) ? 1 : elapsed.intValue();
 
         return time + "s";
     }
