@@ -189,8 +189,8 @@ public class TestRailNotifier extends Notifier {
         //if we have any subsections - process them
         Results results = new Results();
 
-        if (suite.hasSuits()) {
-            for (Testsuite subsuite : suite.getSuits()) {
+        if (suite.hasSuites()) {
+            for (Testsuite subsuite : suite.getSuites()) {
                 results.merge(addSuite(subsuite, String.valueOf(sectionId), existingCases));
             }
         }
@@ -219,7 +219,7 @@ public class TestRailNotifier extends Notifier {
 
         return results;
     }
-    
+
     // Overridden for better type safety.
     // If your plugin doesn't really define any property on Descriptor,
     // you don't have to do this.
@@ -257,10 +257,12 @@ public class TestRailNotifier extends Notifier {
             }
             return FormValidation.ok();
         }
+
         public ListBoxModel doFillTestrailProjectItems() {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
+
             ListBoxModel items = new ListBoxModel();
             try {
                 for (Project prj : testrail.getProjects()) {
@@ -269,6 +271,7 @@ public class TestRailNotifier extends Notifier {
             } catch (ElementNotFoundException e) {
             } catch (IOException e) {
             }
+
             return items;
         }
 
@@ -276,15 +279,17 @@ public class TestRailNotifier extends Notifier {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
-            ListBoxModel items = new ListBoxModel();
 
+            ListBoxModel items = new ListBoxModel();
             try {
-                for (Suite suite : testrail.getSuits(testrailProject)) {
+                for (Suite suite : testrail.getSuites(testrailProject)) {
                     items.add(suite.getName(), suite.getStringId());
                 }
             } catch (ElementNotFoundException e) {
             } catch (IOException e) {
+            } catch (TestRailException e) {
             }
+
             return items;
         }
 
@@ -293,9 +298,11 @@ public class TestRailNotifier extends Notifier {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
+
             if (getTestrailHost().isEmpty() || getTestrailUser().isEmpty() || getTestrailPassword().isEmpty() || !testrail.serverReachable() || !testrail.authenticationWorks()) {
                 return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
             }
+
             return FormValidation.ok();
         }
 
@@ -361,8 +368,6 @@ public class TestRailNotifier extends Notifier {
             return FormValidation.ok();
         }
 
-
-
         public ListBoxModel doFillTestrailMilestoneItems(@QueryParameter int testrailProject) {
             ListBoxModel items = new ListBoxModel();
             items.add("None", "");
@@ -385,7 +390,7 @@ public class TestRailNotifier extends Notifier {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Notify TestRail";
+            return "TestRail Plugin";
         }
 
         @Override

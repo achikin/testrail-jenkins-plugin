@@ -192,17 +192,20 @@ public class TestRailClient {
                 return projects[i].getId();
             }
         }
+
         throw new ElementNotFoundException(projectName);
     }
 
-    public Suite[] getSuits(int projectId) throws IOException, ElementNotFoundException {
+    public Suite[] getSuites(int projectId) throws IOException, ElementNotFoundException {
         String body = httpGet("/index.php?/api/v2/get_suites/" + projectId).getBody();
+
         JSONArray json;
         try {
             json = new JSONArray(body);
         } catch (JSONException e) {
             return new Suite[0];
         }
+
         Suite[] suites = new Suite[json.length()];
         for (int i = 0; i < json.length(); i++) {
             JSONObject o = json.getJSONObject(i);
@@ -211,40 +214,46 @@ public class TestRailClient {
             s.setId(o.getInt("id"));
             suites[i] = s;
         }
+
         return suites;
     }
 
     public String getCasesString(int projectId, int suiteId) {
-        String result = "index.php?/api/v2/get_cases/" + projectId + "&suite_id=" + suiteId;
-        return result;
+        return "index.php?/api/v2/get_cases/" + projectId + "&suite_id=" + suiteId;
     }
 
     public Case[] getCases(int projectId, int suiteId) throws IOException, ElementNotFoundException {
         // "/#{project_id}&suite_id=#{suite_id}#{section_string}"
         String body = httpGet("index.php?/api/v2/get_cases/" + projectId + "&suite_id=" + suiteId).getBody();
         JSONArray json = new JSONArray(body);
+
         Case[] cases = new Case[json.length()];
         for (int i = 0; i < json.length(); i++) {
             JSONObject o = json.getJSONObject(i);
             cases[i] = createCaseFromJson(o);
         }
+
         return cases;
     }
 
     public Section[] getSections(int projectId, int suiteId) throws IOException, ElementNotFoundException {
         String body = httpGet("index.php?/api/v2/get_sections/" + projectId + "&suite_id=" + suiteId).getBody();
         JSONArray json = new JSONArray(body);
+
         Section[] sects = new Section[json.length()];
         for (int i = 0; i < json.length(); i++) {
             JSONObject o = json.getJSONObject(i);
             sects[i] = createSectionFromJSON(o);
         }
+
         return sects;
     }
     private Section createSectionFromJSON(JSONObject o) {
         Section s = new Section();
+
         s.setName(o.getString("name"));
         s.setId(o.getInt("id"));
+
         if (!o.isNull("parent_id")) {
             s.setParentId(String.valueOf(o.getInt("parent_id")));
         } else {
@@ -252,6 +261,7 @@ public class TestRailClient {
         }
 
         s.setSuiteId(o.getInt("suite_id"));
+
         return s;
     }
 
@@ -261,15 +271,18 @@ public class TestRailClient {
         String payload = new JSONObject().put("name", sectionName).put("suite_id", suiteId).put("parent_id", parentId).toString();
         String body = httpPost("index.php?/api/v2/add_section/" + projectId , payload).getBody();
         JSONObject o = new JSONObject(body);
+
         return createSectionFromJSON(o);
     }
 
     private Case createCaseFromJson(JSONObject o) {
         Case s = new Case();
+        
         s.setTitle(o.getString("title"));
         s.setId(o.getInt("id"));
         s.setSectionId(o.getInt("section_id"));
         s.setRefs(o.optString("refs"));
+
         return s;
     }
 
