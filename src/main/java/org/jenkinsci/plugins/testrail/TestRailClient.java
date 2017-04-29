@@ -107,7 +107,7 @@ public class TestRailClient {
     }
 
     private TestRailResponse httpPost(String path, String payload)
-        throws UnsupportedEncodingException, IOException, HTTPException {
+        throws UnsupportedEncodingException, IOException, HTTPException, TestRailException {
         TestRailResponse response;
 
         do {
@@ -121,6 +121,10 @@ public class TestRailClient {
             }
         } while (response.getStatus() == 429);
 
+        if (response.getStatus() != 200) {
+            // any status code other than 200 is an error
+            throw new TestRailException("Posting to " + path + " returned an error! Response from TestRail is: \n" + response.getBody());
+        }
         return response;
     }
 
@@ -251,7 +255,8 @@ public class TestRailClient {
         return s;
     }
 
-    public Section addSection(String sectionName, int projectId, int suiteId, String parentId) throws IOException, ElementNotFoundException {
+    public Section addSection(String sectionName, int projectId, int suiteId, String parentId) 
+            throws IOException, ElementNotFoundException, TestRailException {
         //Section section = new Section();
         String payload = new JSONObject().put("name", sectionName).put("suite_id", suiteId).put("parent_id", parentId).toString();
         String body = httpPost("index.php?/api/v2/add_section/" + projectId , payload).getBody();
@@ -268,7 +273,8 @@ public class TestRailClient {
         return s;
     }
 
-    public Case addCase(Testcase caseToAdd, int sectionId) throws IOException {
+    public Case addCase(Testcase caseToAdd, int sectionId) 
+            throws IOException, TestRailException {
         JSONObject payload = new JSONObject().put("title", caseToAdd.getName());
         if (!StringUtils.isEmpty(caseToAdd.getRefs())) {
             payload.put("refs", caseToAdd.getRefs());
@@ -279,7 +285,8 @@ public class TestRailClient {
         return c;
     }
 
-    public TestRailResponse addResultsForCases(int runId, Results results) throws IOException {
+    public TestRailResponse addResultsForCases(int runId, Results results) 
+            throws IOException, TestRailException {
         JSONArray a = new JSONArray();
         for (int i = 0; i < results.getResults().size(); i++) {
             JSONObject o = new JSONObject();
@@ -295,7 +302,7 @@ public class TestRailClient {
     }
 
     public int addRun(int projectId, int suiteId, String milestoneID, String description)
-            throws IOException {
+            throws IOException, TestRailException {
         String payload = new JSONObject().put("suite_id", suiteId).put("description", description).put("milestone_id", milestoneID).toString();
         String body = httpPost("index.php?/api/v2/add_run/" + projectId, payload).getBody();
         return new JSONObject(body).getInt("id");
@@ -330,7 +337,7 @@ public class TestRailClient {
     }
 
     public boolean closeRun(int runId)
-            throws IOException {
+            throws IOException, TestRailException {
         String payload = "";
         int status = httpPost("index.php?/api/v2/close_run/" + runId, payload).getStatus();
         return (200 == status);

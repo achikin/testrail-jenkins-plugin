@@ -129,16 +129,30 @@ public class TestRailNotifier extends Notifier {
             return false;
         }
         List<Testsuite> suites = actualJunitResults.getSuites();
-        for (Testsuite suite: suites) {
-            results.merge(addSuite(suite, null, testCases));
+        try {
+            for (Testsuite suite: suites) {
+                results.merge(addSuite(suite, null, testCases));
+            }
+        } catch (Exception e) {
+            listener.getLogger().println("Failed to create missing Test Suites in TestRail.");
+            listener.getLogger().println("EXCEPTION: " + e.getMessage());
         }
 
         listener.getLogger().println("Uploading results to TestRail.");
         String runComment = "Automated results from Jenkins: " + build.getUrl().toString();
         String milestoneId = testrailMilestone;
 
-        int runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
-        TestRailResponse response = testrail.addResultsForCases(runId, results);
+        int runId = -1;
+        TestRailResponse response;
+        try {
+            runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
+            response = testrail.addResultsForCases(runId, results);
+        } catch (TestRailException e) {
+            listener.getLogger().println("Error pushing results to TestRail");
+            listener.getLogger().println(e.getMessage());
+            return false;
+        }
+
         boolean buildResult = (200 == response.getStatus());
         if (buildResult) {
             listener.getLogger().println("Successfully uploaded test results.");
@@ -147,12 +161,17 @@ public class TestRailNotifier extends Notifier {
             listener.getLogger().println("status: " + response.getStatus());
             listener.getLogger().println("body :\n" + response.getBody());
         }
-        testrail.closeRun(runId);
+        try {
+            testrail.closeRun(runId);
+        } catch (Exception e) {
+            listener.getLogger().println("Failed to close test run in TestRail.");
+            listener.getLogger().println("EXCEPTION: " + e.getMessage());
+        }
 
         return buildResult;
     }
 
-    public Results addSuite(Testsuite suite, String parentId, ExistingTestCases existingCases) throws IOException {
+    public Results addSuite(Testsuite suite, String parentId, ExistingTestCases existingCases) throws IOException, TestRailException {
         //figure out TR sectionID
         int sectionId;
         try {
@@ -166,13 +185,16 @@ public class TestRailNotifier extends Notifier {
                 return null;
             }
         }
+
         //if we have any subsections - process them
         Results results = new Results();
+
         if (suite.hasSuits()) {
             for (Testsuite subsuite : suite.getSuits()) {
                 results.merge(addSuite(subsuite, String.valueOf(sectionId), existingCases));
             }
         }
+
         if (suite.hasCases()) {
             for (Testcase testcase : suite.getCases()) {
                 int caseId;
@@ -194,8 +216,10 @@ public class TestRailNotifier extends Notifier {
                 results.addResult(new Result(caseId, caseStatus, caseComment, caseTime));
             }
         }
+
         return results;
     }
+    
     // Overridden for better type safety.
     // If your plugin doesn't really define any property on Descriptor,
     // you don't have to do this.
@@ -263,6 +287,7 @@ public class TestRailNotifier extends Notifier {
             }
             return items;
         }
+
         public FormValidation doCheckTestrailSuite(@QueryParameter String value)
                 throws IOException, ServletException {
             testrail.setHost(getTestrailHost());
@@ -386,6 +411,5 @@ public class TestRailNotifier extends Notifier {
         public String getTestrailPassword() { return testrailPassword; }
         public void setTestrailInstance(TestRailClient trc) { testrail = trc; }
         public TestRailClient getTestrailInstance() { return testrail; }
-
     }
 }
