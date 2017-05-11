@@ -16,27 +16,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.JunitResults;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
 /**
- * Created by Drew on 3/26/2014.
+ * Created by Drew on 3/24/2014.
  */
-public class Failure {
-    private String type;
-    private String message;
-    private String text;
+public class Section {
+    private int id;
+    private int suiteId;
+    private String name;
+    private String parentId;
 
-    @XmlAttribute
-    public void setType(String type) { this.type = type; }
-    @XmlAttribute
-    public void  setMessage(String message) { this.message = message; }
-    @XmlValue
-    public void setText(String text) { this.text = text; }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public void  setSuiteId(int suiteId) { this.suiteId = suiteId; }
+    public void setName(String name) {
+        this.name = name.trim();
+    }
+    public void setParentId(String id) { this.parentId = id; }
 
-    public String getType() { return this.type; }
-    public String getMessage() { return this.message; }
-    public String getText() { return this.text; }
+    public int getId() {
+        return this.id;
+    }
+    public int getSuiteId() { return this.suiteId; }
+    public String getName() {
+        return this.name;
+    }
+    public String getParentId() { return this.parentId; }
 }

@@ -3,14 +3,52 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.570</version><!-- which version of Jenkins is this plugin built against? -->
+    <version>2.6</version>
   </parent>
 
-  <groupId>testrail</groupId>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/TestRail+Plugin</url>
+
+  <groupId>org.jenkinsci.plugins</groupId>
   <artifactId>testrail</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <name>TestRail Plugin</name>
+  <version>1.0.7-SNAPSHOT</version>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
   <packaging>hpi</packaging>
 
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/testrail-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/testrail-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/testrail-plugin</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>maven.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <developers>
+    <developer>
+      <id>xirsoi</id>
+      <name>Adam Chevalier</name>
+      <email>chevalierAdam2@gmail.com</email>
+    </developer>
+  </developers>
+  
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
     <repository>
@@ -26,36 +64,31 @@
       <version>4.3.2</version>
     </dependency>
     <dependency>
-        <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-            <version>20140107</version>
-          </dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20140107</version>
+      </dependency>
     <dependency>
       <groupId>org.codehaus.woodstox</groupId>
       <artifactId>woodstox-core-asl</artifactId>
       <version>4.1.4</version>
     </dependency>
-      <dependency>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-          <version>2.1</version>
-      </dependency>
-      <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-all</artifactId>
-          <version>1.8.5</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.jenkins-ci.main</groupId>
-          <artifactId>jenkins-test-harness</artifactId>
-          <version>1.509.4</version>
-      </dependency>
-      <dependency>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.0.201403182114</version>
-      </dependency>
+    <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>2.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>1.8.5</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.0.201403182114</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
@@ -65,16 +98,10 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <distributionManagement>
-    <site>
-      <id>https://github.com/simplymeasured/testrail-jenkins-plugin</id>
-      <url>gitsite:git@github.com/jenkinsci/testrail-jenkins-plugin</url>
-    </site>
-  </distributionManagement>
-
   <properties>
+    <jenkins.version>1.651.3</jenkins.version>
     <!-- define all plugin versions -->
-    <maven.version>3.0.1</maven.version>
+    <maven.version>3.0.2</maven.version>
     <maven-antrun-plugin.version>1.6</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.2</maven-assembly-plugin.version>
     <maven-changelog-plugin.version>2.2</maven-changelog-plugin.version>
@@ -96,7 +123,7 @@
     <maven-project-info-reports-plugin.version>2.3.1</maven-project-info-reports-plugin.version>
     <maven-plugin-plugin.version>2.4.3</maven-plugin-plugin.version>
     <maven-reactor-plugin.version>1.0</maven-reactor-plugin.version>
-    <maven-release-plugin.version>2.1</maven-release-plugin.version>
+    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     <maven-remote-resources-plugin.version>1.1</maven-remote-resources-plugin.version>
     <maven-resources-plugin.version>2.4.3</maven-resources-plugin.version>
     <maven-site-plugin.version>2.1.1</maven-site-plugin.version>
@@ -127,7 +154,7 @@
       <extension>
         <groupId>org.apache.maven.scm</groupId>
         <artifactId>maven-scm-provider-gitexe</artifactId>
-        <version>1.3</version>
+        <version>1.9.1</version>
       </extension>
       <extension>
         <groupId>org.apache.maven.scm</groupId>
@@ -219,8 +246,12 @@
         <version>${maven-checkstyle-plugin.version}</version>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${maven-javadoc-plugin.version}</version>
+        <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
+        </configuration>  
       </plugin>
       <plugin>
         <artifactId>maven-jxr-plugin</artifactId>

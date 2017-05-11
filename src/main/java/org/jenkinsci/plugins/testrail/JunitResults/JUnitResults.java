@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.JunitResults;
+package org.jenkinsci.plugins.testrail.JunitResults;
 
 import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
@@ -32,13 +32,15 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import jenkins.MasterToSlaveFileCallable;
+
 /**
  * Created by Drew on 3/24/2014.
  */
 public class JUnitResults {
     private FilePath baseDir;
     private PrintStream logger;
-    private String[] Files;
+    //private String[] Files;
     private List<Testsuite> Suites;
 
     public JUnitResults(FilePath baseDir, String fileMatchers, PrintStream logger) throws IOException, JAXBException, InterruptedException {
@@ -57,7 +59,7 @@ public class JUnitResults {
         final DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
         logger.println("Scanning " + baseDir);
 
-        baseDir.act(new FilePath.FileCallable<Void>() {
+        baseDir.act(new MasterToSlaveFileCallable<Void>() {
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 logger.println("processing " + f.getName());
                 scanner.scan(f, new FileVisitor() {
@@ -92,5 +94,5 @@ public class JUnitResults {
         return this.Suites;
     }
 
-    public String[] getFiles() { return this.Files; }
+    //public String[] getFiles() { return this.Files.clone(); }
 }

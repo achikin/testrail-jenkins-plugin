@@ -1,0 +1,16 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This Jelly script is used to produce the global configuration options.
+  -->
+  <f:section title="TestRail">
+    <f:entry title="Host" field="testrailHost">
+      <f:textbox />
+    </f:entry>
+    <f:entry title="User" field="testrailUser">
+      <f:textbox />
+    </f:entry>
+    <f:entry title="Password" field="testrailPassword">
+      <f:password />
+    </f:entry>
+  </f:section>
+</j:jelly>

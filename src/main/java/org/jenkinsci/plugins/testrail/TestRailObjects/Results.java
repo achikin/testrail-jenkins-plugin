@@ -16,31 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Drew on 3/24/2014.
+ * Created by Drew on 3/25/2014.
  */
-public class Suite {
-    private int id;
-    private String name;
+public class Results {
 
-    public void setId(int id) {
-        this.id = id;
+    private List<Result> results;
+
+    public Results() {
+        this.results = new ArrayList<Result>();
     }
 
-    public void setName(String name) {
-        this.name = name.trim();
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getStringId() { return Integer.toString(id); }
-
+    public void setResults(ArrayList<Result> results) { this.results = results; }
+    public void addResult(Result result) { this.results.add(result); }
+    public List<Result> getResults() { return this.results; }
+    public void merge(Results other) { this.results.addAll(other.getResults()); }
 }

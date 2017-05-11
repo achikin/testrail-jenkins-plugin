@@ -16,27 +16,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.JunitResults;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
 /**
  * Created by Drew on 3/24/2014.
  */
-public class Testcase {
-    private String name;
-    private Failure failure;
-    private Float time;
+public class Project {
+    private int _id;
+    private String _name;
 
-    @XmlAttribute
-    public void setName(String name) { this.name = name.trim(); }
-    @XmlElement(name = "failure")
-    public void setFailure(Failure failure) { this.failure = failure; }
-    @XmlAttribute(name = "time")
-    public void setTime(Float time) { this.time = time; }
+    public void setId(int id) {
+        _id = id;
+    }
 
-    public String getName() { return this.name; }
-    public Failure getFailure() { return this.failure; }
-    public Float getTime() { return this.time; }
+    public void setName(String name) {
+        _name = name.trim();
+    }
+
+    public int getId() {
+        return _id;
+    }
+
+    public String getName() {
+        return _name;
+    }
+
+    public String getStringId() { return Integer.toString(_id); }
 }

@@ -1,4 +1,4 @@
-package testrail.testrail.JunitResults;
+package org.jenkinsci.plugins.testrail.JunitResults;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

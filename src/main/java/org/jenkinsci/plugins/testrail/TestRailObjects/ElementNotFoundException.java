@@ -16,32 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRailObjects;
 
 /**
  * Created by Drew on 3/24/2014.
  */
-public class Section {
-    private int id;
-    private int suiteId;
-    private String name;
-    private String parentId;
-
-    public void setId(int id) {
-        this.id = id;
+public class ElementNotFoundException extends Exception {
+    public ElementNotFoundException(String message) {
+        super(message);
     }
-    public void  setSuiteId(int suiteId) { this.suiteId = suiteId; }
-    public void setName(String name) {
-        this.name = name.trim();
-    }
-    public void setParentId(String id) { this.parentId = id; }
-
-    public int getId() {
-        return this.id;
-    }
-    public int getSuiteId() { return this.suiteId; }
-    public String getName() {
-        return this.name;
-    }
-    public String getParentId() { return this.parentId; }
 }

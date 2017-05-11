@@ -16,34 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail.TestRailObjects;
-
+package org.jenkinsci.plugins.testrail;
 
 /**
- * Created by Drew on 3/24/2014.
+ * Created by Drew on 3/20/14.
  */
-public class Case {
-    private int id;
-    private String title;
-    private int sectionId;
+public class TestRailResponse {
+    private Integer status;
+    public Integer getStatus() { return status; }
+    
+    private String body;
+    public String getBody() { return body; }
 
-    public void setId(int id) {
-        this.id = id;
+    public TestRailResponse(Integer status, String body) {
+        this.status = status;
+        this.body = body;
     }
-
-    public void setTitle(String title) {
-        this.title = title.trim();
-    }
-
-    public void setSectionId(int sectionId) { this.sectionId = sectionId; }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public int getSectionId() { return this.sectionId; }
 }

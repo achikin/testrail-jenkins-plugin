@@ -1,22 +1,28 @@
 testrail-jenkins-plugin
 =======================
 
-Forked from  https://github.com/simplymeasured/testrail-jenkins-plugin
+Forked from  https://github.com/achikin/testrail-jenkins-plugin
 Integrate test results from Jenkins into TestRail.
 Upload your junit test results to TestRail after every run.
-Each Jenkins build becomes test run.
-Each testsuite becomes test group.
+The file should follow the [junit schema](https://github.com/windyroad/JUnit-Schema/blob/master/JUnit.xsd)
+Each Jenkins build becomes a test run.
+Each test suite becomes a test group.
 
+Using the Plugin
+-----
+1. First, install the TestRail Notifier plugin via the Plugin interface. You can also install this manually, but it's not recommended unless you are an experienced user.
 
-This fork changelog
----------------
-- fixed validation issues
-- added milestone support
-- fixed junit files parsing
-- added nested <testsuite> tags support in junit
-- added dropdown lists to select projects, suites and milestones
+2. Once you install the plugin, you must configure the TestRail user in your Global Settings. 
+![Global Settings for the TestRail Notifier](global-settings.PNG)
 
-Build
+3. Go to the job you wish to use the plugin with and add a Post Build Acion. The option you want is Notify TestRail.
+
+4. Configure the step. The Project and Test Suite dropdowns are automatically populated using the TestRail API.
+Note you can also optionally define a Milestone that you are testing against. 
+The Test Report XMLs is a comma separated list of XML files in the job workspace containing results to send to TestRail.
+![Project Settings for the TestRail Notifier](job-settings.PNG)
+
+Developers
 -----
 This is a Maven project. You'll need the following in your ~/.m2/settings.xml.
 

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testrail.testrail;
+package org.jenkinsci.plugins.testrail;
 
 import hudson.Extension;
 import hudson.FilePath;
@@ -32,18 +32,18 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import testrail.testrail.JunitResults.Failure;
-import testrail.testrail.JunitResults.JUnitResults;
-import testrail.testrail.JunitResults.Testcase;
-import testrail.testrail.JunitResults.Testsuite;
-import testrail.testrail.TestRailObjects.*;
+import org.jenkinsci.plugins.testrail.JunitResults.Failure;
+import org.jenkinsci.plugins.testrail.JunitResults.JUnitResults;
+import org.jenkinsci.plugins.testrail.JunitResults.Testcase;
+import org.jenkinsci.plugins.testrail.JunitResults.Testsuite;
+import org.jenkinsci.plugins.testrail.TestRailObjects.*;
 
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import static testrail.testrail.Utils.*;
+import static org.jenkinsci.plugins.testrail.Utils.*;
 
 public class TestRailNotifier extends Notifier {
 
@@ -92,6 +92,10 @@ public class TestRailNotifier extends Notifier {
         String[] caseNames = null;
         try {
             caseNames = testCases.listTestCases();
+            listener.getLogger().println("Test Cases: ");
+            for (int i = 0; i < caseNames.length; i++) {
+                listener.getLogger().println("  " + caseNames[i]);
+            }
         } catch (ElementNotFoundException e) {
             listener.getLogger().println("Failed to list test cases");
             listener.getLogger().println("Element not found:" + e.getMessage());
@@ -110,25 +114,45 @@ public class TestRailNotifier extends Notifier {
         // it looks like the destructor deletes the temp dir when we're finished
         FilePath tempdir = new FilePath(Util.createTempDir());
         // This picks up *all* result files so if you have old results in the same directory we'll see those, too.
-        build.getWorkspace().copyRecursiveTo(junitResultsGlob, "", tempdir);
-
+        FilePath ws = build.getWorkspace();
+        try {
+            ws.copyRecursiveTo(junitResultsGlob, "", tempdir);
+        } catch (Exception e) {
+            listener.getLogger().println("Error trying to copy files to Jenkins master: " + e.getMessage());
+            return false;
+        }
         JUnitResults actualJunitResults = null;
         try {
             actualJunitResults = new JUnitResults(tempdir, this.junitResultsGlob, listener.getLogger());
         } catch (JAXBException e) {
             listener.getLogger().println(e.getMessage());
+            return false;
         }
         List<Testsuite> suites = actualJunitResults.getSuites();
-        for (Testsuite suite: suites) {
-            results.merge(addSuite(suite, null, testCases));
+        try {
+            for (Testsuite suite: suites) {
+                results.merge(addSuite(suite, null, testCases));
+            }
+        } catch (Exception e) {
+            listener.getLogger().println("Failed to create missing Test Suites in TestRail.");
+            listener.getLogger().println("EXCEPTION: " + e.getMessage());
         }
 
         listener.getLogger().println("Uploading results to TestRail.");
-        String runComment = "Automated results from Jenkins: " + BuildWrapper.all().jenkins.getRootUrl() + "/" + build.getUrl().toString();
+        String runComment = "Automated results from Jenkins: " + build.getUrl().toString();
         String milestoneId = testrailMilestone;
 
-        int runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
-        TestRailResponse response = testrail.addResultsForCases(runId, results);
+        int runId = -1;
+        TestRailResponse response;
+        try {
+            runId = testrail.addRun(testCases.getProjectId(), testCases.getSuiteId(), milestoneId, runComment);
+            response = testrail.addResultsForCases(runId, results);
+        } catch (TestRailException e) {
+            listener.getLogger().println("Error pushing results to TestRail");
+            listener.getLogger().println(e.getMessage());
+            return false;
+        }
+
         boolean buildResult = (200 == response.getStatus());
         if (buildResult) {
             listener.getLogger().println("Successfully uploaded test results.");
@@ -137,12 +161,17 @@ public class TestRailNotifier extends Notifier {
             listener.getLogger().println("status: " + response.getStatus());
             listener.getLogger().println("body :\n" + response.getBody());
         }
-        testrail.closeRun(runId);
+        try {
+            testrail.closeRun(runId);
+        } catch (Exception e) {
+            listener.getLogger().println("Failed to close test run in TestRail.");
+            listener.getLogger().println("EXCEPTION: " + e.getMessage());
+        }
 
         return buildResult;
     }
 
-    public Results addSuite(Testsuite suite, String parentId, ExistingTestCases existingCases) throws IOException {
+    public Results addSuite(Testsuite suite, String parentId, ExistingTestCases existingCases) throws IOException, TestRailException {
         //figure out TR sectionID
         int sectionId;
         try {
@@ -156,20 +185,23 @@ public class TestRailNotifier extends Notifier {
                 return null;
             }
         }
+
         //if we have any subsections - process them
         Results results = new Results();
-        if (suite.hasSuits()) {
-            for (Testsuite subsuite : suite.getSuits()) {
+
+        if (suite.hasSuites()) {
+            for (Testsuite subsuite : suite.getSuites()) {
                 results.merge(addSuite(subsuite, String.valueOf(sectionId), existingCases));
             }
         }
+
         if (suite.hasCases()) {
             for (Testcase testcase : suite.getCases()) {
                 int caseId;
                 try {
                     caseId = existingCases.getCaseId(suite.getName(), testcase.getName());
                 } catch (ElementNotFoundException e) {
-                    caseId = existingCases.addCase(testcase.getName(), sectionId);
+                    caseId = existingCases.addCase(testcase, sectionId);
                 }
                 int caseStatus;
                 Float caseTime = testcase.getTime();
@@ -184,8 +216,10 @@ public class TestRailNotifier extends Notifier {
                 results.addResult(new Result(caseId, caseStatus, caseComment, caseTime));
             }
         }
+
         return results;
     }
+
     // Overridden for better type safety.
     // If your plugin doesn't really define any property on Descriptor,
     // you don't have to do this.
@@ -198,23 +232,8 @@ public class TestRailNotifier extends Notifier {
         return BuildStepMonitor.NONE; //null;
     }
 
-    /**
-     * Descriptor for {@link TestRailNotifier}. Used as a singleton.
-     * The class is marked as public so that it can be accessed from views.
-     *
-     * <p>
-     * See <tt>src/main/resources/hudson/plugins/hello_world/TestRailRecorder/*.jelly</tt>
-     * for the actual HTML fragment for the configuration screen.
-     */
-    @Extension // This indicates to Jenkins that this is an implementation of an extension point.
+    @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-        /**
-         * To persist global configuration information,
-         * simply store it in a field and call save().
-         *
-         * <p>
-         * If you don't want fields to be persisted, use <tt>transient</tt>.
-         */
         private String testrailHost = "";
         private String testrailUser = "";
         private String testrailPassword = "";
@@ -228,14 +247,6 @@ public class TestRailNotifier extends Notifier {
             load();
         }
 
-        /**
-         * Performs on-the-fly validation of the form field 'name'.
-         *
-         * @param value
-         *      This parameter receives the value that the user has typed.
-         * @return
-         *      Indicates the outcome of the validation. This is sent to the browser.
-         */
         public FormValidation doCheckTestrailProject(@QueryParameter int value)
                 throws IOException, ServletException {
             testrail.setHost(getTestrailHost());
@@ -246,10 +257,12 @@ public class TestRailNotifier extends Notifier {
             }
             return FormValidation.ok();
         }
+
         public ListBoxModel doFillTestrailProjectItems() {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
+
             ListBoxModel items = new ListBoxModel();
             try {
                 for (Project prj : testrail.getProjects()) {
@@ -258,6 +271,7 @@ public class TestRailNotifier extends Notifier {
             } catch (ElementNotFoundException e) {
             } catch (IOException e) {
             }
+
             return items;
         }
 
@@ -265,25 +279,30 @@ public class TestRailNotifier extends Notifier {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
-            ListBoxModel items = new ListBoxModel();
 
+            ListBoxModel items = new ListBoxModel();
             try {
-                for (Suite suite : testrail.getSuits(testrailProject)) {
+                for (Suite suite : testrail.getSuites(testrailProject)) {
                     items.add(suite.getName(), suite.getStringId());
                 }
             } catch (ElementNotFoundException e) {
             } catch (IOException e) {
+            } catch (TestRailException e) {
             }
+
             return items;
         }
+
         public FormValidation doCheckTestrailSuite(@QueryParameter String value)
                 throws IOException, ServletException {
             testrail.setHost(getTestrailHost());
             testrail.setUser(getTestrailUser());
             testrail.setPassword(getTestrailPassword());
+
             if (getTestrailHost().isEmpty() || getTestrailUser().isEmpty() || getTestrailPassword().isEmpty() || !testrail.serverReachable() || !testrail.authenticationWorks()) {
                 return FormValidation.warning("Please fix your TestRail configuration in Manage Jenkins -> Configure System.");
             }
+
             return FormValidation.ok();
         }
 
@@ -349,8 +368,6 @@ public class TestRailNotifier extends Notifier {
             return FormValidation.ok();
         }
 
-
-
         public ListBoxModel doFillTestrailMilestoneItems(@QueryParameter int testrailProject) {
             ListBoxModel items = new ListBoxModel();
             items.add("None", "");
@@ -373,7 +390,7 @@ public class TestRailNotifier extends Notifier {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Publish test results to TestRail";
+            return "TestRail Plugin";
         }
 
         @Override
@@ -391,12 +408,6 @@ public class TestRailNotifier extends Notifier {
             return super.configure(req,formData);
         }
 
-        /**
-         * This method returns true if the global configuration says we should speak French.
-         *
-         * The method name is bit awkward because global.jelly calls this method to determine
-         * the initial state of the checkbox by the naming convention.
-         */
         public void setTestrailHost(String host) { this.testrailHost = host; }
         public String getTestrailHost() { return testrailHost; }
         public void setTestrailUser(String user) { this.testrailUser = user; }
@@ -405,6 +416,5 @@ public class TestRailNotifier extends Notifier {
         public String getTestrailPassword() { return testrailPassword; }
         public void setTestrailInstance(TestRailClient trc) { testrail = trc; }
         public TestRailClient getTestrailInstance() { return testrail; }
-
     }
 }
