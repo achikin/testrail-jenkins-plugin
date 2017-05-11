@@ -34,6 +34,6 @@ public class Results {
 
     public void setResults(ArrayList<Result> results) { this.results = results; }
     public void addResult(Result result) { this.results.add(result); }
-    public List<Result> getResults() {return this.results; }
+    public List<Result> getResults() { return this.results; }
     public void merge(Results other) { this.results.addAll(other.getResults()); }
 }
