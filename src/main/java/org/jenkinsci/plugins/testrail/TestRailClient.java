@@ -304,8 +304,7 @@ public class TestRailClient {
         for (int i = 0; i < results.getResults().size(); i++) {
             JSONObject o = new JSONObject();
             Result r = results.getResults().get(i);
-            String comment = (r.getMessage() == null ? r.getText() : r.getMessage());
-            o.put("case_id", r.getCaseId()).put("status_id", r.getStatusId()).put("comment", r.getMessage()).put("elapsed", r.getElapsedTimeString());
+            o.put("case_id", r.getCaseId()).put("status_id", r.getStatusId()).put("comment", r.getComment()).put("elapsed", r.getElapsedTimeString());
             a.put(o);
         }
 

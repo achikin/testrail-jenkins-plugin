@@ -25,28 +25,24 @@ public class Result {
     private int caseId;
     private int statusId;
     private Float elapsed;
-    private String message;
-    private String text;
+    private String comment;
 
-    public Result(int caseId, int statusId, String message, Float elapsed, String text) {
+    public Result(int caseId, int statusId, String comment, Float elapsed) {
         this.caseId = caseId;
         this.statusId = statusId;
-        this.message = message;
+        this.comment = comment;
         this.elapsed = elapsed;
-        this.text = text;
     }
 
     public void setCaseId(int caseId) { this.caseId = caseId; }
     public void setStatusId(int statusId) { this.statusId = statusId; }
     public void setElapsed(float timeInSeconds) { this.elapsed = timeInSeconds; }
-    public void setMessage(String message) { this.message = message; }
-    public void setText(String text) { this.text = text; }
+    public void setComment(String comment) { this.comment = comment; }
 
     public int getCaseId() { return this.caseId; }
     public int getStatusId() { return this.statusId; }
     public Float getElapsed() { return this.elapsed; }
-    public String getMessage() { return this.message; }
-    public String getText() { return this.text; }
+    public String getComment() { return this.comment; }
 
     public String getElapsedTimeString() {
         int time = (elapsed == null) ? 1 : elapsed.intValue();
