@@ -74,8 +74,7 @@ public class TestRailNotifier extends Notifier {
     public boolean getEnableMilestone() { return  this.enableMilestone; }
 
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
-            throws IOException, InterruptedException {
+    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         TestRailClient  testrail = getDescriptor().getTestrailInstance();
         testrail.setHost(getDescriptor().getTestrailHost());
         testrail.setUser(getDescriptor().getTestrailUser());
@@ -209,7 +208,7 @@ public class TestRailNotifier extends Notifier {
                 Failure caseFailure = testcase.getFailure();
                 if (caseFailure != null) {
                     caseStatus = 5; // Failed
-                    caseComment = caseFailure.getText();
+                    caseComment = (caseFailure.getMessage() == null) ? caseFailure.getText() : caseFailure.getMessage() + "\n" + caseFailure.getText();
                 } else {
                     caseStatus = 1; // Passed
                 }
