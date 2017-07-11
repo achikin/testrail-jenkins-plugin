@@ -13,6 +13,10 @@
   <f:entry title="Test Report XMLs" field="junitResultsGlob">
     <f:textbox />
   </f:entry>
+  <f:entry title="Create new testcases" field="createNewTestcases">
+    <f:checkbox/>
+  </f:entry>
+
   <f:block>
        <table>
          <f:optionalBlock name="enableMilestone" title="Use milestone" inline="true" checked="${instance.enableMilestone}">
