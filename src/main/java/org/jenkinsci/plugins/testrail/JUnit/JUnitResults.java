@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.JunitResults;
+package org.jenkinsci.plugins.testrail.JUnit;
 
 import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
@@ -41,7 +41,7 @@ public class JUnitResults {
     private FilePath baseDir;
     private PrintStream logger;
     //private String[] Files;
-    private List<Testsuite> Suites;
+    private List<TestSuite> Suites;
 
     public JUnitResults(FilePath baseDir, String fileMatchers, PrintStream logger) throws IOException, JAXBException, InterruptedException {
         this.baseDir = baseDir;
@@ -50,9 +50,9 @@ public class JUnitResults {
     }
 
     public void slurpTestResults(String fileMatchers) throws IOException, JAXBException, InterruptedException {
-        Suites = new ArrayList<Testsuite>();
-        JAXBContext jaxbSuiteContext = JAXBContext.newInstance(Testsuite.class);
-        JAXBContext jaxbSuitesContext = JAXBContext.newInstance(Testsuites.class);
+        Suites = new ArrayList<TestSuite>();
+        JAXBContext jaxbSuiteContext = JAXBContext.newInstance(TestSuite.class);
+        JAXBContext jaxbSuitesContext = JAXBContext.newInstance(TestSuites.class);
         final Unmarshaller jaxbSuiteUnmarshaller = jaxbSuiteContext.createUnmarshaller();
         final Unmarshaller jaxbSuitesUnmarshaller = jaxbSuitesContext.createUnmarshaller();
 
@@ -60,6 +60,8 @@ public class JUnitResults {
         logger.println("Scanning " + baseDir);
 
         baseDir.act(new MasterToSlaveFileCallable<Void>() {
+            private static final long serialVersionUID = 1L;
+
             public Void invoke(File f, VirtualChannel channel) throws IOException {
                 logger.println("processing " + f.getName());
                 scanner.scan(f, new FileVisitor() {
@@ -67,15 +69,15 @@ public class JUnitResults {
                     public void visit(File file, String s) throws IOException {
                         logger.println("processing " + file.getName());
                         try {
-                            Testsuites suites = (Testsuites) jaxbSuitesUnmarshaller.unmarshal(file);
+                            TestSuites suites = (TestSuites) jaxbSuitesUnmarshaller.unmarshal(file);
                             if (suites.hasSuites()) {
-                                for (Testsuite suite : suites.getSuites()) {
+                                for (TestSuite suite : suites.getSuites()) {
                                     Suites.add(suite);
                                 }
                             }
                         } catch (ClassCastException e) {
                             try {
-                                Testsuite suite = (Testsuite) jaxbSuiteUnmarshaller.unmarshal(file);
+                                TestSuite suite = (TestSuite) jaxbSuiteUnmarshaller.unmarshal(file);
                                 Suites.add(suite);
                            } catch (JAXBException ex) {
                                ex.printStackTrace();
@@ -90,7 +92,7 @@ public class JUnitResults {
         });
     }
 
-    public List<Testsuite> getSuites() {
+    public List<TestSuite> getSuites() {
         return this.Suites;
     }
 

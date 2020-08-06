@@ -26,19 +26,18 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
-import org.jenkinsci.plugins.testrail.JunitResults.Testcase;
-import org.jenkinsci.plugins.testrail.TestRailObjects.*;
+import org.jenkinsci.plugins.testrail.JUnit.TestCase;
+import org.jenkinsci.plugins.testrail.TestRail.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.xml.ws.http.HTTPException;
+import org.apache.http.HttpException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.InterruptedException;
-import java.util.List;
 import static org.jenkinsci.plugins.testrail.Utils.*;
 /**
  * Created by Drew on 3/19/14.
@@ -107,19 +106,23 @@ public class TestRailClient {
     }
 
     private TestRailResponse httpPost(String path, String payload)
-        throws UnsupportedEncodingException, IOException, HTTPException, TestRailException {
+        throws UnsupportedEncodingException, IOException, TestRailException {
         TestRailResponse response;
 
-        do {
-            response = httpPostInt(path, payload);
-            if (response.getStatus() == 429) {
-                try {
-                    Thread.sleep(60000);
-                } catch (InterruptedException e) {
-                    log(e.toString());
+        try {
+            do {
+                response = httpPostInt(path, payload);
+                if (response.getStatus() == 429) {
+                    try {
+                        Thread.sleep(60000);
+                    } catch (InterruptedException e) {
+                        log(e.toString());
+                    }
                 }
-            }
-        } while (response.getStatus() == 429);
+            } while (response.getStatus() == 429);  
+        } catch (HttpException e) {
+            throw new TestRailException("Posting to " + path + " returned an error!", e);
+        }
 
         if (response.getStatus() != 200) {
             // any status code other than 200 is an error
@@ -129,7 +132,7 @@ public class TestRailClient {
     }
 
     private TestRailResponse httpPostInt(String path, String payload)
-            throws UnsupportedEncodingException, IOException, HTTPException {
+            throws UnsupportedEncodingException, IOException, HttpException {
         TestRailResponse result;
         PostMethod post = new PostMethod(host + "/" + path);
         HttpClient httpclient = setUpHttpClient(post);
@@ -293,7 +296,7 @@ public class TestRailClient {
         return s;
     }
 
-    public Case addCase(Testcase caseToAdd, int sectionId) 
+    public Case addCase(TestCase caseToAdd, int sectionId) 
             throws IOException, TestRailException {
         JSONObject payload = new JSONObject().put("title", caseToAdd.getName());
         if (!StringUtils.isEmpty(caseToAdd.getRefs())) {
@@ -305,12 +308,12 @@ public class TestRailClient {
         return c;
     }
 
-    public TestRailResponse addResultsForCases(int runId, Results results) 
+    public TestRailResponse addResultsForCases(int runId, TestRailResults results) 
             throws IOException, TestRailException {
         JSONArray a = new JSONArray();
         for (int i = 0; i < results.getResults().size(); i++) {
             JSONObject o = new JSONObject();
-            Result r = results.getResults().get(i);
+            TestRailResult r = results.getResults().get(i);
             o.put("case_id", r.getCaseId()).put("status_id", r.getStatus().getValue()).put("comment", r.getComment()).put("elapsed", r.getElapsedTimeString());
             a.put(o);
         }

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +24,16 @@ import java.util.List;
 /**
  * Created by Drew on 3/25/2014.
  */
-public class Results {
+public class TestRailResults {
 
-    private List<Result> results;
+    private List<TestRailResult> results;
 
-    public Results() {
-        this.results = new ArrayList<Result>();
+    public TestRailResults() {
+        this.results = new ArrayList<TestRailResult>();
     }
 
-    public void setResults(ArrayList<Result> results) { this.results = results; }
-    public void addResult(Result result) { this.results.add(result); }
-    public List<Result> getResults() { return this.results; }
-    public void merge(Results other) { this.results.addAll(other.getResults()); }
+    public void setResults(ArrayList<TestRailResult> results) { this.results = results; }
+    public void addResult(TestRailResult result) { this.results.add(result); }
+    public List<TestRailResult> getResults() { return this.results; }
+    public void merge(TestRailResults other) { this.results.addAll(other.getResults()); }
 }

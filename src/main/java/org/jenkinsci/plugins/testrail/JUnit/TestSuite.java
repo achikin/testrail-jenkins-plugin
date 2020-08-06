@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.JunitResults;
+package org.jenkinsci.plugins.testrail.JUnit;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,13 +27,13 @@ import java.util.List;
  * Created by Drew on 3/24/2014.
  */
 @XmlRootElement
-public class Testsuite {
+public class TestSuite {
     private String name;
     private int failures;
     private int errors;
     private int skipped;
-    private List<Testcase> cases;
-    private List<Testsuite> suites;
+    private List<TestCase> cases;
+    private List<TestSuite> suites;
     @XmlAttribute
     public void setName(String name) { this.name = name.trim(); }
     @XmlAttribute
@@ -43,13 +43,13 @@ public class Testsuite {
     @XmlAttribute
     public void setSkipped(int skipped) { this.skipped = skipped; }
     @XmlElement(name = "testcase")
-    public void setCases(List<Testcase> cases) { this.cases = cases; }
+    public void setCases(List<TestCase> cases) { this.cases = cases; }
     @XmlElement(name = "testsuite")
-    public void setSuites(List<Testsuite> suites) { this.suites = suites; }
+    public void setSuites(List<TestSuite> suites) { this.suites = suites; }
 
     public String getName() { return this.name; }
-    public List<Testcase> getCases() { return this.cases; }
-    public List<Testsuite> getSuites() {return this.suites; }
+    public List<TestCase> getCases() { return this.cases; }
+    public List<TestSuite> getSuites() {return this.suites; }
     public int getFailures() { return this.failures; }
     public int getErrors() { return this.errors; }
     public int getSkipped() { return this.skipped; }

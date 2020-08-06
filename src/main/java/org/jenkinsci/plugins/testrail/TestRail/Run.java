@@ -16,43 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRail;
 
 
 /**
  * Created by Drew on 3/24/2014.
  */
-public class Case {
+public class Run {
+    private int suiteId;
     private int id;
-    private String title;
-    private int sectionId;
-    private String refs;
+    private String description;
+    private String milestoneId;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setSuiteId(int suiteId) { this.suiteId = suiteId; }
+    public void setId(int id) { this.id = id; }
+    public void setDescription(String description) { this.description = description; }
+    public void setMilestoneId(String mid) { this.milestoneId = mid; }
 
-    public void setTitle(String title) {
-        this.title = title.trim();
-    }
-
-    public void setSectionId(int sectionId) { this.sectionId = sectionId; }
-
-    public void setRefs(String refs) {
-        this.refs = refs;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public int getSectionId() { return this.sectionId; }
-
-    public String getRefs() {
-        return this.refs;
-    }
+    public int getSuiteId() { return this.suiteId; }
+    public int getId() { return this.id; }
+    public String getDescription() { return this.description; }
+    public String getMilestoneId() {return this.milestoneId; }
 }

@@ -16,7 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.JunitResults;
+package org.jenkinsci.plugins.testrail.TestRail;
 
-public class Skipped {
+/**
+ * Created by Drew on 3/24/2014.
+ */
+public class ElementNotFoundException extends Exception {
+    private static final long serialVersionUID = 1256229093040803158L;
+
+    public ElementNotFoundException(String message) {
+        super(message);
+    }
 }

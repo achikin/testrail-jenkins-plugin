@@ -32,12 +32,12 @@ import hudson.util.FormValidation;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
-import org.jenkinsci.plugins.testrail.JunitResults.*;
+import org.jenkinsci.plugins.testrail.JUnit.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.jenkinsci.plugins.testrail.TestRailObjects.*;
+import org.jenkinsci.plugins.testrail.TestRail.*;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
@@ -113,7 +113,7 @@ public class TestRailNotifier extends Notifier implements SimpleBuildStep {
         }
 
         taskListener.getLogger().println("Munging test result files.");
-        Results results = new Results();
+        TestRailResults results = new TestRailResults();
 
         // FilePath doesn't have a read method. We want to actually process the files on the master
         // because during processing we talk to TestRail and slaves might not be able to.
@@ -138,9 +138,9 @@ public class TestRailNotifier extends Notifier implements SimpleBuildStep {
             taskListener.getLogger().println(e.getMessage());
             run.setResult(hudson.model.Result.FAILURE);
         }
-        List<Testsuite> suites = actualJunitResults.getSuites();
+        List<TestSuite> suites = actualJunitResults.getSuites();
         try {
-            for (Testsuite suite: suites) {
+            for (TestSuite suite: suites) {
                 results.merge(addSuite(suite, null, testCases));
             }
         } catch (Exception e) {
@@ -179,7 +179,7 @@ public class TestRailNotifier extends Notifier implements SimpleBuildStep {
         }
     }
 
-    public Results addSuite(Testsuite suite, String parentId, ExistingTestCases existingCases) throws IOException, TestRailException {
+    public TestRailResults addSuite(TestSuite suite, String parentId, ExistingTestCases existingCases) throws IOException, TestRailException {
         //figure out TR sectionID
         int sectionId;
         try {
@@ -195,16 +195,16 @@ public class TestRailNotifier extends Notifier implements SimpleBuildStep {
         }
 
         //if we have any subsections - process them
-        Results results = new Results();
+        TestRailResults results = new TestRailResults();
 
         if (suite.hasSuites()) {
-            for (Testsuite subsuite : suite.getSuites()) {
+            for (TestSuite subsuite : suite.getSuites()) {
                 results.merge(addSuite(subsuite, String.valueOf(sectionId), existingCases));
             }
         }
 
         if (suite.hasCases()) {
-            for (Testcase testcase : suite.getCases()) {
+            for (TestCase testcase : suite.getCases()) {
                 int caseId = 0;
                 boolean addResult = false;
                 try {
@@ -231,7 +231,7 @@ public class TestRailNotifier extends Notifier implements SimpleBuildStep {
 	                }
 
 	                if (caseStatus != CaseStatus.UNTESTED){
-	                    results.addResult(new Result(caseId, caseStatus, caseComment, caseTime));
+	                    results.addResult(new TestRailResult(caseId, caseStatus, caseComment, caseTime));
 	                }
 	            }
             }
@@ -420,7 +420,6 @@ public class TestRailNotifier extends Notifier implements SimpleBuildStep {
             testrailHost = formData.getString("testrailHost");
             testrailUser = formData.getString("testrailUser");
             testrailPassword = formData.getString("testrailPassword");
-
 
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setTestrailHost)

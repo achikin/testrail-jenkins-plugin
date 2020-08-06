@@ -16,13 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRail;
 
 /**
- * Created by Drew on 3/24/2014.
+ * Created by Adam 'xirsoi' Chevalier on 4/28/2017.
  */
-public class ElementNotFoundException extends Exception {
-    public ElementNotFoundException(String message) {
+public class TestRailException extends Exception {
+    private static final long serialVersionUID = 9162568949904090503L;
+
+    public TestRailException(String message) {
         super(message);
+    }
+    
+    public TestRailException(String message, Exception innerException) {
+        super(message, innerException);
     }
 }

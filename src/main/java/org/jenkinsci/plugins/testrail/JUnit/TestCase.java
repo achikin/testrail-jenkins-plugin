@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.JunitResults;
+package org.jenkinsci.plugins.testrail.JUnit;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlElements;
 /**
  * Created by Drew on 3/24/2014.
  */
-public class Testcase {
+public class TestCase {
     private String name;
     private Failure failure;
     private Skipped skipped;

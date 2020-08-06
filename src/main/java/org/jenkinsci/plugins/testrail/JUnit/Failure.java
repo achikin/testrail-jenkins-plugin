@@ -16,30 +16,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.JUnit;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
- * Created by Drew on 3/24/2014.
+ * Created by Drew on 3/26/2014.
  */
-public class Project {
-    private int _id;
-    private String _name;
+public class Failure {
+    private String type;
+    private String message;
+    private String text;
 
-    public void setId(int id) {
-        _id = id;
-    }
+    @XmlAttribute
+    public void setType(String type) { this.type = type; }
+    @XmlAttribute
+    public void  setMessage(String message) { this.message = message; }
+    @XmlValue
+    public void setText(String text) { this.text = text; }
 
-    public void setName(String name) {
-        _name = name.trim();
-    }
-
-    public int getId() {
-        return _id;
-    }
-
-    public String getName() {
-        return _name;
-    }
-
-    public String getStringId() { return Integer.toString(_id); }
+    public String getType() { return this.type; }
+    public String getMessage() { return this.message; }
+    public String getText() { return this.text; }
 }

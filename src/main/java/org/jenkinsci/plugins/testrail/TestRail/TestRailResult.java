@@ -16,18 +16,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRail;
 
 /**
  * Created by Drew on 3/25/2014.
  */
-public class Result {
+public class TestRailResult {
     private int caseId;
     private CaseStatus status;
     private Float elapsed;
     private String comment;
 
-    public Result(int caseId, CaseStatus status, String comment, Float elapsed) {
+    public TestRailResult(int caseId, CaseStatus status, String comment, Float elapsed) {
         this.caseId = caseId;
         this.status = status;
         this.comment = comment;

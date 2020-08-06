@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRail;
 
 /**
  * Created by alex.bernier on 6/19/17.

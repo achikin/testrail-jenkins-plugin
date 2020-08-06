@@ -16,9 +16,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.testrail.TestRailObjects;
+package org.jenkinsci.plugins.testrail.TestRail;
 
-import org.jenkinsci.plugins.testrail.JunitResults.Testcase;
+import org.jenkinsci.plugins.testrail.JUnit.TestCase;
 import org.jenkinsci.plugins.testrail.TestRailClient;
 
 import java.io.IOException;
@@ -109,7 +109,7 @@ public class ExistingTestCases {
         return addedSection.getId();
     }
 
-    public int addCase(Testcase caseToAdd, int sectionId) throws IOException, TestRailException {
+    public int addCase(TestCase caseToAdd, int sectionId) throws IOException, TestRailException {
         Case addedCase = testRailClient.addCase(caseToAdd, sectionId);
         cases.add(addedCase);
         return addedCase.getId();
