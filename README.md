@@ -47,22 +47,24 @@ This is a Maven project. You'll need the following in your ~/.m2/settings.xml. A
   <pluginGroups>
     <pluginGroup>org.jenkins-ci.tools</pluginGroup>
   </pluginGroups>
+
   <profiles>
+    <!-- Give access to Jenkins plugins -->
     <profile>
       <id>jenkins</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>true</activeByDefault> <!-- change this to false, if you don't like to have it on per default -->
       </activation>
       <repositories>
         <repository>
           <id>repo.jenkins-ci.org</id>
-          <url>http://repo.jenkins-ci.org/public/</url>
+          <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
       </repositories>
       <pluginRepositories>
         <pluginRepository>
           <id>repo.jenkins-ci.org</id>
-          <url>http://repo.jenkins-ci.org/public/</url>
+          <url>https://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
       </pluginRepositories>
     </profile>
@@ -70,7 +72,7 @@ This is a Maven project. You'll need the following in your ~/.m2/settings.xml. A
   <mirrors>
     <mirror>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
       <mirrorOf>m.g.o-public</mirrorOf>
     </mirror>
   </mirrors>
