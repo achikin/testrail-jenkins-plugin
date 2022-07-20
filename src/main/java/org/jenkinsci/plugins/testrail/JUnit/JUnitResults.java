@@ -26,6 +26,12 @@ import hudson.util.FileVisitor;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.RealJenkinsRule;
+
+import org.junit.Rule;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -43,6 +49,19 @@ public class JUnitResults {
     //private String[] Files;
     private List<TestSuite> Suites;
 
+    private static JAXBContext getJAXBContext(Class<?>... classesToBeBound) throws JAXBException {
+        Thread t = Thread.currentThread();
+        ClassLoader orig = t.getContextClassLoader();
+        t.setContextClassLoader(RealJenkinsRule.Endpoint.class.getClassLoader());
+        try {
+            return JAXBContext.newInstance(classesToBeBound);
+        } finally {
+            t.setContextClassLoader(orig);
+        }
+    }
+
+    @Rule public RealJenkinsRule rr = new RealJenkinsRule();
+
     public JUnitResults(FilePath baseDir, String fileMatchers, PrintStream logger) throws IOException, JAXBException, InterruptedException {
         this.baseDir = baseDir;
         this.logger = logger;
@@ -51,11 +70,10 @@ public class JUnitResults {
 
     public void slurpTestResults(String fileMatchers) throws IOException, JAXBException, InterruptedException {
         Suites = new ArrayList<TestSuite>();
-        JAXBContext jaxbSuiteContext = JAXBContext.newInstance(TestSuite.class);
-        JAXBContext jaxbSuitesContext = JAXBContext.newInstance(TestSuites.class);
+        JAXBContext jaxbSuiteContext = getJAXBContext(TestSuite.class);
+        JAXBContext jaxbSuitesContext = getJAXBContext(TestSuites.class);
         final Unmarshaller jaxbSuiteUnmarshaller = jaxbSuiteContext.createUnmarshaller();
         final Unmarshaller jaxbSuitesUnmarshaller = jaxbSuitesContext.createUnmarshaller();
-
         final DirScanner scanner = new DirScanner.Glob(fileMatchers, null);
         logger.println("Scanning " + baseDir);
 
@@ -80,9 +98,11 @@ public class JUnitResults {
                                 TestSuite suite = (TestSuite) jaxbSuiteUnmarshaller.unmarshal(file);
                                 Suites.add(suite);
                            } catch (JAXBException ex) {
+                               logger.println("processing " + file.getName() + " FAILED: " + ex);
                                ex.printStackTrace();
                            }
                         } catch (JAXBException exc) {
+                            logger.println("processing2 " + file.getName() + " FAILED: " + exc);
                             exc.printStackTrace();
                         }
                     }

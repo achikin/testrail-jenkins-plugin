@@ -35,6 +35,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.apache.http.HttpException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.InterruptedException;
@@ -77,14 +81,14 @@ public class TestRailClient {
 
         do {
             response = httpGetInt(path);
-            if (response.getStatus() == 429) {
+            if ((response.getStatus() == 429) || (response.getStatus() == 504)) {
                 try {
                     Thread.sleep(60000);
                 } catch (InterruptedException e) {
                     log(e.toString());
                 }
             }
-       } while (response.getStatus() == 429);
+        } while ((response.getStatus() == 429) || (response.getStatus() == 504));
 
        return response;
     }
@@ -96,7 +100,11 @@ public class TestRailClient {
 
         try {
             Integer status = httpclient.executeMethod(get);
-            String body = new String(get.getResponseBody(), get.getResponseCharSet());
+
+            String body = new BufferedReader(new InputStreamReader(get.getResponseBodyAsStream(),
+                                                                   get.getResponseCharSet()))
+                                                                      .lines()
+                                                                      .collect(Collectors.joining("\n"));
             result = new TestRailResponse(status, body);
         } finally {
             get.releaseConnection();
@@ -112,14 +120,14 @@ public class TestRailClient {
         try {
             do {
                 response = httpPostInt(path, payload);
-                if (response.getStatus() == 429) {
+                if ((response.getStatus() == 429) || (response.getStatus() == 504)) {
                     try {
                         Thread.sleep(60000);
                     } catch (InterruptedException e) {
                         log(e.toString());
                     }
                 }
-            } while (response.getStatus() == 429);  
+            } while ((response.getStatus() == 429) || (response.getStatus() == 504));
         } catch (HttpException e) {
             throw new TestRailException("Posting to " + path + " returned an error!", e);
         }
@@ -145,7 +153,10 @@ public class TestRailClient {
             );
             post.setRequestEntity(requestEntity);
             Integer status = httpclient.executeMethod(post);
-            String body = new String(post.getResponseBody(), post.getResponseCharSet());
+            String body = new BufferedReader(new InputStreamReader(post.getResponseBodyAsStream(),
+                                                                   post.getResponseCharSet()))
+                                                                       .lines()
+                                                                       .collect(Collectors.joining("\n"));
             result = new TestRailResponse(status, body);
         } finally {
             post.releaseConnection();
@@ -170,12 +181,12 @@ public class TestRailClient {
     }
 
     public boolean authenticationWorks() throws IOException {
-        TestRailResponse response = httpGet("/index.php?/api/v2/get_projects");
+        TestRailResponse response = httpGet("index.php?/api/v2/get_projects");
         return (200 == response.getStatus());
     }
 
     public Project[] getProjects() throws IOException, ElementNotFoundException {
-        String body = httpGet("/index.php?/api/v2/get_projects").getBody();
+        String body = httpGet("index.php?/api/v2/get_projects").getBody();
         JSONArray json = new JSONArray(body);
         Project[] projects = new Project[json.length()];
         for (int i = 0; i < json.length(); i++) {
@@ -200,7 +211,7 @@ public class TestRailClient {
     }
 
     public Suite[] getSuites(int projectId) throws IOException, ElementNotFoundException {
-        String body = httpGet("/index.php?/api/v2/get_suites/" + projectId).getBody();
+        String body = httpGet("index.php?/api/v2/get_suites/" + projectId).getBody();
 
         JSONArray json;
         try {
